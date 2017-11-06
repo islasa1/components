@@ -16,6 +16,8 @@
 //  Purpose : Generic Clock class creates a single event ( tick ) when registered 
 //            resources are ready to update, can be placed in a certain order
 //            to control pipeline / dataflow for resources tied to a similar clock
+//            Supports up to a 1000Hz clock with one resources to manage ( ordering 
+//            resources can cause delays )
 //  Group   : Timing
 //
 //  TODO    : Anthony Islas
@@ -26,6 +28,11 @@
 
 #ifndef __TIMING_CLOCK_H__
 #define __TIMING_CLOCK_H__
+
+#include <vector>
+#include <functional>
+
+class std::thread;
 
 namespace components
 {
@@ -39,19 +46,30 @@ public:
   Clock();
   ~Clock();
   
-  void setFrequency( double fp64Freq );
-  void setTimeMilli( double fp64Delay );
+  void start( );
+  void stop( );
 
-  void registerResource( std::mutex& m_Resource, unsigned int order )
+  void setFrequency( double fp64Freq );
+  void setTimeMillis( unsigned int ui32Delay );
+  void setTimeNano  ( unsigned int ui32Delay );
+
+  void setPipeline() { bPipelined_ = true;  }
+  void setParallel() { bPipelined_ = false; }
+
+  void registerResource( Event& e, unsigned int order = -1 )
 
 private:
 
   void update( );
 
-  double fp64Delay_;
-  double fp64Freq_;
+  unsigned int ui32Delay_;
 
-  std::vector< std::mutex& > vMutexResources;
+  std::thread t_Timer;
+
+  bool bDone_;
+  bool bPipelined_;
+
+  std::vector< Event& > vEvents_;
 
 
 };
