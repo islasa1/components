@@ -25,8 +25,8 @@
 #ifndef __TIMING_EVENT_H__
 #define __TIMING_EVENT_H__
 
-#include <template>
 #include <fucntional>
+#include <template>
 
 namespace components
 {

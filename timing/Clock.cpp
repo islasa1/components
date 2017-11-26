@@ -61,7 +61,91 @@ Clock::Clock( )
 //
 //**********************************************************************************
 Clock::~Clock( )
-{} // Clock::~Clock
+{
+  done = true;
+
+  if ( t_Timer_.joinable() )
+  {
+    t_Timer_.join();
+  }
+
+} // Clock::~Clock
+
+//**********************************************************************************
+//
+//  Clock::synchronize
+//
+//  \brief Synchronize all clocks in the vector
+//  
+//  \param vClocks
+//   
+//  Synchronize the Sync mutexes and conditional variables between all clocks
+//
+//  \return bool
+//
+//**********************************************************************************
+bool Clock::synchronize( std::vector< Clock& > vClocks )
+{
+  if ( vClocks.size( ) < 2 ) // 1 or 0 clocks, nothing to sync 
+  {
+    return true; // Technically synced
+  }
+  //
+  // Grab the first Clock's info
+  // 
+  std::shared_ptr< std::mutex >                m_sp  = vClocks[ 0 ].m_spPauseSync_;
+  std::shared_ptr< std::conditional_variable > cv_sp = vClocks[ 0 ].cv_spPauseSync_;
+
+  if ( m_sp.use_count( ) == 0 && cv_sp.use_count( ) == 0 )
+  {
+    m_sp = std::make_shared< std::mutex >( );
+  }
+  else if ( m_sp.use_count( ) != cv_sp.use_count( ) )
+  {
+    // Somthing is off
+    //\todo This should probably be a throw
+    return false;
+  }
+  // else we already have a sync spot
+
+  for (
+        std::vector< Clock& >::iterator it = vClocks.begin(); 
+        it != vClocks.end(); 
+        it++
+        )
+  {
+    //
+    // Synchronize the clocks, note you may only be synched with one pause group
+    //
+
+  }
+
+
+  
+} // Clock::synchronize
+
+
+//**********************************************************************************
+//
+//  Clock::desynchronize
+//
+//  \brief Desynchronize all clocks in the vector
+// 
+//  \param vClocks
+//  
+//  Desynchronizes all the Sync mutexes of the clock if they are linked
+//
+//  \return bool
+//
+//**********************************************************************************
+bool Clock::desynchronize( std::vector< Clocks& > vClocks )
+{
+  
+
+
+} // Clock::desynchronize
+
+
 
 //**********************************************************************************
 //
@@ -74,10 +158,23 @@ Clock::~Clock( )
 //  \return none
 //
 //**********************************************************************************
-void Clock::start( )
+bool Clock::start( )
 {
-  
-  t_Timer = std::thread( this->update );
+  if ( !t_Timer_.joinable() )
+  {
+
+    t_Timer_ = std::thread( this->update );
+
+  }
+  else
+  {
+    //
+    // We were paused
+    //
+    m_Pause_.unlock();
+  }
+
+  return true;
 
 } // Clock::start
 
@@ -96,14 +193,14 @@ void Clock::start( )
 bool Clock::stop( )
 {
   
-  if ( t_Timer.joinable( ) )
+  if ( t_Timer_.joinable( ) )
   {
     // Stop loop
     done = true;
 
     try 
     {
-      t_Timer.join( );
+      t_Timer_.join( );
     }
     catch
     {
@@ -117,7 +214,39 @@ bool Clock::stop( )
     //\todo AI: Add some logging info here
     return false;
   }
+
+  return true;
+
 } // Clock::stop
+
+//**********************************************************************************
+//
+//  Clock::pause
+//
+//  \brief Pause the clock
+// 
+//  Pauses the clock temporarily, must be restarted with start
+//
+//  \return none
+//
+//**********************************************************************************
+void Clock::pause( )
+{
+  try
+  {
+    m_Pause_.lock( );
+  } 
+  catch( ... )
+  {
+    //
+    //
+    //
+    return false;
+  }
+
+  return true;
+
+} // Clock::pause
 
 
 
@@ -239,36 +368,15 @@ void Clock::registerResource( Event& e, unsigned int order )
 //**********************************************************************************
 void Clock::update( Clock& clock )
 {
-  std::vector< std::mutex& >::iterator it;
-  while ( !done )
+
+  while ( !done_ )
   {
 
-    // Iterate across all resources
-    for (
-          it = vMutexResources_.begin( ); 
-          it != vMutexResources_.end( );
-          it++
-          )
-    {
-      // Loop until we have the lock
-      while ( !it->try_lock( ) );
 
-    }
 
     std::this_thread::sleep_for( std::chrono::milliseconds( ulDelay_ ) );
 
-    // Iterate across all resources
-    for (
-          it = vMutexResources_.begin( ); 
-          it != vMutexResources_.end( );
-          it++
-          )
-    {
-      // Release locks
-      it->unlock( );
-    }
 
-  }
 
 } // Clock::update
 
