@@ -1,31 +1,29 @@
-#### Components 
+# Components 
 ### _A collection of generic programming tools_
 
 ## Synopsis
 This repository is a collection of generic programming tools not specific to any
 one single code project. It exists as part of an effor to aid the C++ code bases 
-of Komorebi Games.
+of [Komorebi Games](https://github.com/KomorebiGames/).
 
 ## Reuired Software
 This software is designed with the intent to run on a Unix/Linux environment. Certain aspects may be able to compile for Windows, but there is no guartantee it will. 
-
-Building requires at least:
-  __cmake v3.5.0__
-  __gcc 4.6__
-  __c++11__
-  _access to Google Test Repository_
+  
+Building requires at least:  
+__[cmake v3.5.0](https://cmake.org/download/)__  
+__gcc 4.6__     
+__c++11__  
+_[Google Test Repository](https://github.com/google/googletest)_ 
 
 ## Build & Installation
 To build this repository perform an out-of-source build. This means we will compile the code in a directory tha is not part of the source files. Steps in 
-*_this font_* are to be typed verbatim on the terminal.
+`this font` are to be typed verbatim on the terminal.
 Steps:
  
-0. *_cd _*_[top level where this file is]_*
-1. *_cd build_*_[or where ever you plan to build]
-2. *_cmake .._* _[any cmake defines]_
-3. *_make -j12_* _[or *-j32* if you're real fancy]_
-4. You're done! You can now use the libComponents.so as part of your build
-   and use the includes.
+1. `cd build` _[or where ever you plan to build]_
+2. `cmake ..` _[any cmake defines]_
+3. `make -j12` _[or `-j32` if you're real fancy]_
+4. You're done! You can now use the libComponents.so as part of your build and use the includes.
 
 ## License
 
