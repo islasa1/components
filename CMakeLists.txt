@@ -24,17 +24,30 @@
 # Dependencies
 #
 cmake_minimum_required ( VERSION 3.5.0 )
+
 set ( CMAKE_BUILD_TYPE debug )
+
+#
+# Get our modules
+#
+list( APPEND 
+      CMAKE_MODULE_PATH
+      ${CMAKE_CURRENT_SOURCE_DIR}/cmake 
+      )
+
+include( GoogleTestSetup )
+include( VersionExtract  )
 
 ####################################################################################
 #
 # Project setup
 #
 ####################################################################################
+version_extract_str( ${CMAKE_CURRENT_SOURCE_DIR}/versions.txt PROJECT_VERSION )
 project ( 
           Components 
           VERSION 
-          0.1.0 
+          ${PROJECT_VERSION}
           )
 
 message ( "Creating " ${PROJECT_NAME} )
@@ -174,8 +187,10 @@ set ( GTEST_LIB_MAIN
 # Source directories
 #
 ####################################################################################
-message ( "Building Components")
-add_subdirectory ( components )
+message ( "Configuring ${PROJECT_NAME}")
+add_subdirectory ( resources )
+add_subdirectory ( string    )
+add_subdirectory ( timing    )
 
 
 
@@ -186,23 +201,32 @@ add_subdirectory ( components )
 # Configuration stuff
 #
 ####################################################################################
-configure_file ( ${PROJECT_SOURCE_DIR}/config.hpp.in
+configure_file ( ${PROJECT_SOURCE_DIR}/common/config.hpp.in
                  ${PROJECT_BINARY_DIR}/config.hpp 
                  @ONLY 
-               )
+                )
 
 ####################################################################################
 #
 # Regression test
 #
 ####################################################################################
-#
-# Must be last to allow correct setup of regresiion test
-#
-add_subdirectory ( gtest )
-message ( "Current Tests: " ) 
-foreach (test_file ${TEST_SOURCES} )
-  message ( '${test_file}' )
-endforeach ()
+if ( UNIT_TEST )
+  if ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/gtest )
 
-message ( "Resources located in : '${TEST_RESOURCES}'" )
+    #
+    # Must be last to allow correct setup of regresiion test
+    #
+    add_subdirectory ( gtest )
+    message ( "Current Tests: " ) 
+    foreach (test_file ${TEST_SOURCES} )
+      message ( '${test_file}' )
+    endforeach ()
+
+    message ( "Resources located in : '${TEST_RESOURCES}'" )
+
+  endif()
+
+endif()
+
+

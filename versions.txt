@@ -1,0 +1,3 @@
+0.1.0
+  [#1] Creation of parser, resources, and timing classes
+  Initial development
