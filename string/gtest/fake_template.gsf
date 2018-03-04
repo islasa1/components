@@ -1,0 +1,213 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%     _____    ____ _       ____ _        __ _      __ _  __ _  ______ _   ___ _
+%%    / /| |]  |  __ \\     / ___ \\      / \ \\    |   \\/   |]|  _____|] / ___|]
+%%   / //| |]  | |] \ \\   | |]  \_|]    / //\ \\   | |\ / /| |]| |]___ _ ( ((_ _
+%%  / //_| |]_ | |]  ) ))  | |]  __ _   / _____ \\  | |]\_/ | |]|  _____|] \___ \\
+%% |_____   _|]| |]_/ //   | |]__/  |] / //    \ \\ | |]    | |]| |]___ _   ___) ))
+%%       |_|]  |_____//     \_____/|]]/_//      \_\\|_|]    |_|]|_______|] |____//
+%%       
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
+%%  File    : Parser.hpp
+%%  Author  : Anthony Islas
+%%  Purpose : FAKE TEMPLATE FOR TESTING
+%%  Group   : Sprites
+%%
+%%  TODO    : None
+%%
+%%  License : None
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% GSF File - Generic Sprite File
+% 
+%
+
+%
+% <- '%' signifies a comment, but cannot be nested
+% e.g. important data % some comment % more data
+% You will need to escape the comment char when providing ascii art
+% and you will also need to use escape char to escape itself as well
+% as scope characters []
+%
+
+%
+% Keywords:
+%   SPRITE
+%   ANIM
+%   TRANSCHAR
+%   TRANSCOLOR
+%   FRAMETIME
+%   FRAMESIZE
+%   STARTSPRITE
+%   ENDSPRITE
+%   STARTCOLOR
+%   ENDCOLOR
+%   USECOLOR
+%   
+% These keywords are used to denote aspects of the entire file
+% or particular sections as elements of the overall Sprite / 
+% Animation library
+% 
+% More than one sprite or animation may be contained in a gsf file
+% and is intended to be a "library" for rendering data for a particular
+% entity / game element. 
+%
+
+%
+% Transparency:
+%   Transparency in a sprite or animation (reel of sprites) can be denoted
+%   by use of a specific character or color (discussed in "Sprites")
+%
+%   These are set on a global scope throughout the file
+%     NOTE: The values are NOT put in "" or '' as they are not strings and take
+%           away from the effect of ascii art if every char is in "" / ''
+%
+TRANSCHAR  = @
+TRANSCOLOR = G
+
+
+%
+% Sprites:
+%   Sprites are single frame images of the element
+%   Sprites can be given a tag, but is not necessary (a default internal tag will
+%   be used when parsing). Tags are in "" only, must be unique, and must follow 
+%   C-style identifiers
+%
+%   Sprites will begin scope with [ 
+%     The VERY FIRST item afterwards must be FRAMESIZE with the format nxm
+%     where n is the number of rows and m is the number of columns
+%     Second MUST be FRAMETIME (to be used with animations), if the sprite
+%     is intended as a static image any number can go afterwards. After that is
+%     USECOLOR. This must be included regard;ess if no color will be used, set 
+%     to false
+%     The three values just listed can go in any order but MUST be present before
+%     the sprite
+%
+%     Afterwards everything between FRAMETIME and STARTSPRITE are thrown away
+%     This may be useful to label columns when doing ascii art, 
+%
+%     The very next line after STARTSPRITE will be the image, and must conform to 
+%     the provided frame dimensions; newlines are new rows. NO INDENTATION is 
+%     allowed since spaces are characters as well
+%
+%     After that, depending on whether USECOLOR is true, the parser will expect a 
+%     sprite of same size as the actual, but use only predefined color codes 
+%     provided in 
+%     RendererColorCodes.hpp
+%
+%   Finally close the sprite with ]
+%
+SPRITE = "stick_man"
+[
+  FRAMESIZE = 5x15
+  FRAMETIME = 1
+  USECOLOR = true
+
+% Some comments
+%Columns
+%         1111111111
+%1234567890123456789
+STARTSPRITE
+@@@@@@@_@@@@@@@@
+@@@@@@(v)@@@@@@@
+@@@@@@/T\\@@@@@@@
+@@@@@@@|@@@@@@@@
+@@@@@@/@\\@@@@@@@
+ENDSPRITE
+
+STARTCOLOR
+BBBBBBBWBBBBBBBB
+BBBBBBWWWBBBBBBB
+BBBBBBWWWBBBBBBB
+BBBBBBBWBBBBBBBB
+BBBBBBWBWBBBBBBB
+ENDCOLOR
+
+]
+
+%
+% Animantions:
+%   Animations are strips or reels of sprites stitched together under a common 
+%   structure like 
+%   sprite properties are
+%
+%   The same outer rules apply to sprites for tags, and should not use sprite tags
+%   Sprites in the animation will pe put together in top-down order
+%   If a sprite is already defined, instead of copy-pasting the sprite, you can 
+%   substitute the 
+%   sprite in the animation with INCLUDESPRITE "tag", where the tag is the sprite
+%   tag, it is best practice to define the sprite before including if that approach 
+%   is used. 
+%   
+%   Sprites 
+%   defined in the animation can also be included 
+%
+%   Note: if a sprite is included in the animation, the FRAMETIME from the included 
+%   sprite will
+%   be used; if you want to change it dynamically per animation you will have to do 
+%   that inside the code base 
+%
+ANIM = "walking_man"
+[
+  % Start from idle
+  INCLUDESPRITE "stick_man"
+
+  SPRITE = "run_phase1"
+  [
+
+FRAMESIZE = 5x15
+FRAMETIME = 1
+USECOLOR = false
+
+STARTSPRITE
+@@@@@@@_@@@@@@@@
+@@@@@@(>)@@@@@@@   
+@@@@@@/T\\_@@@@@@
+@@@@@@@|@@@@@@@@    
+@@@@@@V \\@@@@@@@
+ENDSRPITE
+
+  ]
+
+
+  SPRITE = "run_phase2"
+  [
+
+FRAMESIZE = 5x15
+FRAMETIME = 1
+USECOLOR = false
+
+STARTSPRITE
+@@@@@@@_@@@@@@@@
+@@@@@@(>)@@@@@@@   
+@@@@@@<TV@@@@@@@
+@@@@@\\_|@@@@@@@@
+@@@@@@@ |@@@@@@@   
+ENDSRPITE
+
+  ]
+
+    SPRITE = "run_phase3"
+  [
+
+FRAMESIZE = 5x15
+FRAMETIME = 1
+USECOLOR = false
+
+STARTSPRITE
+@@@@@@@_@@@@@@@@
+@@@@@@(>)@@@@@@@   
+@@@@@@<T|_@@@@@@
+@@@@@@@|@@@@@@@@    
+@@@@@@/ >@@@@@@@   
+ENDSRPITE
+
+  ]
+
+  % End on idle
+  INCLUDESPRITE "stick_man"
+]

@@ -46,14 +46,18 @@
 if ( THIRDPARTY )
 
   set ( GTEST_ROOT     
-        ${THIRDPARTY}/gtest/googletest 
+        ${THIRDPARTY}/googletest/googletest 
       )
   set ( GTEST_LIB      
-        ${THIRDPARTY}/gtest/googletest/libgtest.a 
+        ${THIRDPARTY}/lib/libgtest.a 
       )
   set ( GTEST_LIB_MAIN 
-        ${THIRDPARTY}/gtest/googletest/libgtest_main.a
+        ${THIRDPARTY}/lib/libgtest_main.a
       )
+
+else()
+
+  message( AUTHOR "No thirdparty provided" )
 
 endif()
 
@@ -182,6 +186,8 @@ endfunction( auto_test_name )
 #
 ####################################################################################
 function( auto_test_case test_files test_suffix test_macro test_name )
+
+
 
 endfunction( auto_test_case )
 
