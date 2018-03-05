@@ -33,13 +33,13 @@
 namespace components
 {
 
-void split( char cDelim,
+void split( char delim,
             const std::string &s,  
             std::vector< std::string > &vElems, 
             bool bRemoveDelim = true );
-void split( char cDelim, std::vector< std::string>& rvElems );
+void split( char delim, std::vector< std::string>& rElems );
 
-std::vector< std::string > split( char cDelim,
+std::vector< std::string > split( char delim,
                                   const std::string &s );
 std::vector< std::string > split( char pDelims[],
                                   const std::string &s );

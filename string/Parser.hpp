@@ -31,72 +31,83 @@
 namespace components
 {
 
+
+namespace string
+{
+
+
 //
 // Parse Elements
 //
-typedef struct sParseElementStructure
+typedef struct ParseElementStructure
 {
   //
   // Lines that are not part of internal elements
   //
-  std::vector< std::string > vElementLines;
+  std::vector< std::string > elementLines_;
 
   //
   // Nested elements
   //
-  std::vector< struct sParseElementStructure > vChildren;
+  std::vector< struct ParseElementStructure > children_;
 
-} sParseElement_t; 
+} ParseElement_t; 
 
 //
 // C-Like parser
 //
 class Parser
 {
-  private:
-    //
-    // Comment character that tells us to ignore the rest of the line
-    //
-    const char cCommentChar;
+  
+public:
+  //
+  // Constructor
+  //
+  Parser( const char commentChar    = '#',
+          const char escapeChar     = '\\',
+          const char scopeStartChar = '{',
+          const char scopeStopChar  = '}' );
 
-    //
-    // Escape character that lets us use all these characters regularly
-    //
-    const char cEscapeChar;
+  virtual ~Parser( );
 
-    //
-    // Scope character to tell us the start of an element (usually {)
-    //
-    const char cScopeStartChar;
+  ParseElement_t ParseFile ( std::string path );
 
-    //
-    // Scopre character to tell us the end of an element (usually })
-    //
-    const char cScopeStopChar;
+private:
+  //
+  // Comment character that tells us to ignore the rest of the line
+  //
+  const char commentChar_;
 
-    //
-    // Internal recursive function to scope elements
-    //
-    bool ParseLines( std::vector< std::string >::iterator& itStart, 
-                     std::vector< std::string >::iterator itEnd,
-                     int& iLineIdx,
-                     sParseElement_t& sElem, 
-                     bool bIsChild );
+  //
+  // Escape character that lets us use all these characters regularly
+  //
+  const char escapeChar_;
 
-  public:
-    //
-    // Constructor
-    //
-    Parser( const char cCommentChar    = '#',
-            const char cEscapeChar     = '\\',
-            const char cScopeStartChar = '{',
-            const char cScopeStopChar  = '}' );
+  //
+  // Scope character to tell us the start of an element (usually {)
+  //
+  const char scopeStartChar_;
 
-    virtual ~Parser( );
+  //
+  // Scopre character to tell us the end of an element (usually })
+  //
+  const char scopeStopChar_;
 
-    sParseElement_t ParseFile ( std::string ssPath );
+  //
+  // Internal recursive function to scope elements
+  //
+  bool ParseLines( std::vector< std::string >::iterator &itStart, 
+                   std::vector< std::string >::iterator  itEnd,
+                   int                                  &lineIdx,
+                   ParseElement_t                       &elem, 
+                   bool                                  isChild );
+
+
 };
 
+
+
+} // namespace string
 
 } // namespace components
 

@@ -27,16 +27,23 @@
 #include "Parser.hpp"
 #include "config.hpp"
 
+namespace components
+{
+
+namespace string
+{
+
+
 TEST( ComponentsTestsParser, StandardParse )
 {
   Parser parser;
-  sParseElement_t sElem;
+  ParseElement_t elem;
   std::cout << "Opening file \'" << TEST_RESOURCES
             << "template.gsf\' " << std::endl;
-  std::string ssFile( std::string ( TEST_RESOURCES ) + "template.gsf" );
-  sElem = parser.ParseFile( ssFile );
+  std::string filename( std::string ( TEST_RESOURCES ) + "template.gsf" );
+  elem = parser.ParseFile( filename );
 
-  ASSERT_FALSE( sElem.vElementLines.empty() );
+  ASSERT_FALSE( elem.elementLines_.empty() );
   
 }
 
@@ -46,13 +53,19 @@ TEST( ComponentsTestsParser, ModifiedParse )
   // Not how you should parse, but tests dynamism of this parser
   //
   Parser parser( '%', '\\', '[', ']' );
-  sParseElement_t sElem;
+  ParseElement_t elem;
   std::cout << "Opening file \'"      << TEST_RESOURCES
             << "fake_template.gsf\' " << std::endl;
-  std::string ssFile( std::string ( TEST_RESOURCES ) + "fake_template.gsf" );
-  sElem = parser.ParseFile( ssFile );
+  std::string filename( std::string ( TEST_RESOURCES ) + "fake_template.gsf" );
+  elem = parser.ParseFile( filename );
 
-  ASSERT_FALSE( sElem.vElementLines.empty() );
+  ASSERT_FALSE( elem.elementLines_.empty() );
 
 
 }
+
+
+
+} // namespace string
+
+} // namespace components

@@ -31,46 +31,46 @@ namespace components
 //
 //  Core split function, tokenizing string into parts based on a delimeter 
 //
-//  cDelim is the character to split on
+//  delim is the character to split on
 //  s is a reference to the string to split
-//  rvElems is a reference to a vector of strings to fill with the results
+//  rElems is a reference to a vector of strings to fill with the results
 //  bRemoveDelim is whether the delimiter should be removed in result (i.e. an 
 //  empty split)
 //
 //  This function is the core process by which the split ( ... ) strutils 
 //  function family 
-//  operates. The results are split based on the next occurence of cDelim and 
+//  operates. The results are split based on the next occurence of delim and 
 //  stored in a provided vector
 //
 //  return None
 //
 //**********************************************************************************
-void split( char cDelim,
+void split( char delim,
             const std::string &s,  
-            std::vector< std::string > &rvElems, 
+            std::vector< std::string > &rElems, 
             bool bRemoveDelim ) 
 {
     std::stringstream ss;
     ss.str(s);
     std::string item;
 
-    while ( getline( ss, item, cDelim ) ) 
+    while ( getline( ss, item, delim ) ) 
     {
-        rvElems.push_back(item);
+        rElems.push_back(item);
     }
   
 
   // Remove empty elems or leave it in
   if ( bRemoveDelim )
   {
-    for(std::vector< std::string >::iterator it = rvElems.begin(); 
-        it != rvElems.end(); 
+    for(std::vector< std::string >::iterator it = rElems.begin(); 
+        it != rElems.end(); 
         it++)
     {
-      if( (*it)[0] == cDelim)
+      if( (*it)[0] == delim)
       {
         // Remove empty entries
-        it = rvElems.erase( it );
+        it = rElems.erase( it );
       }
     }
   }
@@ -81,7 +81,7 @@ void split( char cDelim,
 //
 //  Split a string and return a vector of strings
 //
-//  cDelim is the character to split on
+//  delim is the character to split on
 //  s is a reference to the string to split
 //
 //  Redirects to split( char, const std::string, std::vector, bool )
@@ -89,11 +89,11 @@ void split( char cDelim,
 //  return std::vector containing split results
 //
 //**********************************************************************************
-std::vector< std::string > split( char cDelim,
+std::vector< std::string > split( char delim,
                                   const std::string &s )  
 {
     std::vector< std::string > vElems;
-    split( cDelim, s, vElems );
+    split( delim, s, vElems );
     return vElems;
 }
 
@@ -101,8 +101,8 @@ std::vector< std::string > split( char cDelim,
 //
 //  Split a series of strings based on delimiter
 //
-//  cDelim is the character to split on
-//  rvElems is a reference to a vector of strings to split and hold results
+//  delim is the character to split on
+//  rElems is a reference to a vector of strings to split and hold results
 //
 //  This function is iterates across a series of strings, splitting each 
 //  individually by the provided delimiter. Redirects to split( char, std::string )
@@ -110,15 +110,15 @@ std::vector< std::string > split( char cDelim,
 //  return None
 //
 //**********************************************************************************
-void split( char cDelim, std::vector< std::string>& rvElems )
+void split( char delim, std::vector< std::string>& rElems )
 {
   std::vector< std::string > vNewElems;
   
   //
   // Iterate across all string elements in the vector to split
   //  
-  for( std::vector< std::string >::iterator it = rvElems.begin(); 
-       it != rvElems.end(); 
+  for( std::vector< std::string >::iterator it = rElems.begin(); 
+       it != rElems.end(); 
        it++ )
   {
     if( ( *it ) != "" && !( *it ).empty())
@@ -126,7 +126,7 @@ void split( char cDelim, std::vector< std::string>& rvElems )
       //
       // Split sub elements
       //
-      std::vector< std::string > vTemp = split( cDelim, ( *it ) );
+      std::vector< std::string > vTemp = split( delim, ( *it ) );
       //
       // Insert into new vector
       //
@@ -137,7 +137,7 @@ void split( char cDelim, std::vector< std::string>& rvElems )
     }
   }
     
-  rvElems.assign( vNewElems.begin(), vNewElems.end() );
+  rElems.assign( vNewElems.begin(), vNewElems.end() );
 }
 
 

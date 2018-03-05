@@ -128,8 +128,8 @@ function ( setup_resources cur_target res_files )
   endif ()
   foreach ( res_file ${res_files} )
     string( REGEX MATCH "([a-zA-Z0-9]|_)+\\..*" simple_res ${res_file} )
-    message( STATUS "Making resource ${simple_res}}" ) 
     if ( NOT EXISTS ${new_res} )
+      message( STATUS "Making resource ${simple_res}" ) 
       add_custom_command ( TARGET ${TARGET_NAME}
                            POST_BUILD
                            COMMAND cp ${res_file} ${TEST_RESOURCES}/

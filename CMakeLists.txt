@@ -73,7 +73,6 @@ detailed_print( "PROJECT VERSION" CLR_MAGENTA ${PROJECT_VERSION} CLR_CYAN 14 LEF
 include_directories ( ${PROJECT_BINARY_DIR} )
 
 
-
 ####################################################################################
 #
 # Regression test variable
@@ -99,22 +98,6 @@ find_package ( Threads )
 
 ####################################################################################
 #
-# GTest Vars
-#
-####################################################################################
-# set ( GTEST_ROOT     
-#       ${PROJECT_SOURCE_DIR}/thirdparty/gtest/googletest 
-#     )
-# set ( GTEST_LIB      
-#       ${PROJECT_SOURCE_DIR}/thirdparty/gtest/googletest/libgtest.a 
-#     )
-# set ( GTEST_LIB_MAIN 
-#       ${PROJECT_SOURCE_DIR}/thirdparty/gtest/googletest/libgtest_main.a
-#     )
-
-
-####################################################################################
-#
 # Source directories
 #
 ####################################################################################
@@ -136,6 +119,7 @@ configure_file ( ${PROJECT_SOURCE_DIR}/common/config.hpp.in
                  ${PROJECT_BINARY_DIR}/config.hpp 
                  @ONLY 
                 )
+
 
 ####################################################################################
 #

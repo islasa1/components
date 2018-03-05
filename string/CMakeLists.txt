@@ -21,6 +21,9 @@
 ##
 ####################################################################################
 
+
+set( STRING_TARGETS "" )
+
 #
 # We are creating a target for this directory
 #
@@ -44,6 +47,15 @@ target_sources( ${TARGET}
                   ${CMAKE_CURRENT_SOURCE_DIR}/Parser.cpp
                   ${CMAKE_CURRENT_SOURCE_DIR}/strutils.cpp 
                   )
+
+#
+# Add to targets
+#
+set( STRING_TARGETS 
+    ${STRING_TARGETS} 
+    ${TARGET} 
+    )
+
 
 if ( UNIT_TEST )
 
@@ -73,8 +85,8 @@ if ( UNIT_TEST )
     # Setup 
     #
     set ( RESOURCE_FILES 
-          ${CMAKE_CURRENT_SOURCE_DIR}/../../sprites/template.gsf
-          ${CMAKE_CURRENT_SOURCE_DIR}/../../sprites/fake_template.gsf
+          ${CMAKE_CURRENT_SOURCE_DIR}/gtest/template.gsf
+          ${CMAKE_CURRENT_SOURCE_DIR}/gtest/fake_template.gsf
         )
 
     ####################################################################################
@@ -113,8 +125,27 @@ if ( UNIT_TEST )
           ${GTEST_LIB}
           ${GTEST_LIB_MAIN}
           ${CMAKE_THREAD_LIBS_INIT}
+          KomorebiString
           )
 
+    target_link_libraries( ${TARGET_NAME} ${LIBS} )
+
+
+    #
+    # RPATH
+    #
+    set_target_properties( ${TARGET_NAME}
+                           PROPERTIES
+                             INSTALL_RPATH ${PROJECT_SOURCE_DIR}/lib )
+
+
+    #
+    # Add to targets
+    #
+    set( STRING_TARGETS 
+        ${STRING_TARGETS} 
+        ${TARGET_NAME} 
+        )
 
   endif()
 
@@ -122,4 +153,13 @@ endif()
 
 
 
-  
+
+####################################################################################
+#
+# Install rules
+#
+####################################################################################
+install( TARGETS ${STRING_TARGETS} 
+         RUNTIME DESTINATION ${PROJECT_SOURCE_DIR}/bin
+         LIBRARY DESTINATION ${PROJECT_SOURCE_DIR}/lib
+         )

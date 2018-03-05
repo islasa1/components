@@ -49,3 +49,6 @@ build/bin
 build/*.hpp
 build/resources/
 _build
+bin/
+include/
+lib/
