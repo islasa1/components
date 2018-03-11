@@ -33,8 +33,9 @@ set ( CMAKE_BUILD_TYPE debug )
 # Options
 #
 ####################################################################################
-option( UNIT_TEST   "Enable Google Test Framework" OFF )
-option( XX_LIB      "Set to compile XX LIB"        OFF )
+option( UNIT_TEST         "Enable Google Test Framework"                    OFF )
+option( BUILD_THIRDPARTY  "Perform steps to checkout and build thirdparty"  OFF )
+option( XX_LIB            "Set to compile XX LIB"                           OFF )
 
 set   ( THIRDPARTY 
         "${CMAKE_CURRENT_SOURCE_DIR}/../thirdparty" 
@@ -50,6 +51,7 @@ list( APPEND
       ${CMAKE_CURRENT_SOURCE_DIR}/cmake 
       )
 
+include( ExternalProject )
 include( GoogleTestSetup )
 include( OptionPrinter   )
 include( VersionExtract  )

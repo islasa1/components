@@ -57,6 +57,11 @@ set( STRING_TARGETS
     )
 
 
+####################################################################################
+#
+# UNIT TESTS
+#
+####################################################################################
 if ( UNIT_TEST )
 
   if ( NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/gtest )
@@ -75,11 +80,10 @@ if ( UNIT_TEST )
     # Automate naming of target
     #
     ####################################################################################
-    get_filename_component ( TARGET_NAME ${CMAKE_CURRENT_SOURCE_DIR}/.. ABSOLUTE )
-    string ( REPLACE " " "_" TARGET_NAME ${TARGET_NAME}Test)
-    string ( REGEX MATCH "[0-9a-zA-Z]+Test" TARGET_NAME ${TARGET_NAME} )
+    auto_test_name( ${CMAKE_CURRENT_SOURCE_DIR}/gtest GTEST_NAME )
+    set           ( GTEST_TARGET "${PROJECT_NAME}${TARGET}Tests" )
 
-    message ( "Target Name: " ${TARGET_NAME} )
+    message ( "Target Name: " ${GTEST_TARGET} )
 
     #
     # Setup 
@@ -94,27 +98,38 @@ if ( UNIT_TEST )
     # executable
     #
     ####################################################################################
-    add_executable ( ${TARGET_NAME}  ${TEST_SOURCES} )
+    add_executable ( ${GTEST_TARGET}  ${TEST_SOURCES} )
+
+    add_dependencies( ${GTEST_TARGET} gtest )
+
+
+    ####################################################################################
+    #
+    # Define test cases for each
+    #
+    ####################################################################################
+
+
 
     ####################################################################################
     #
     # Resources necessary to run these tests
     #
     ####################################################################################
-    setup_resources (${TARGET_NAME} "${RESOURCE_FILES}" )
+    setup_resources (${GTEST_TARGET} "${RESOURCE_FILES}" )
 
     ####################################################################################
     #
     # Add GTest includes
     #
     ####################################################################################
-    target_include_directories ( ${TARGET_NAME} 
+    target_include_directories ( ${GTEST_TARGET} 
                                   PUBLIC 
                                   ${TEST_INCLUDES}
                                   ${GTEST_ROOT}/include 
                                   )
 
-    print_include_dirs ( ${TARGET_NAME} )
+    print_include_dirs ( ${GTEST_TARGET} )
 
     ####################################################################################
     #
@@ -128,13 +143,13 @@ if ( UNIT_TEST )
           KomorebiString
           )
 
-    target_link_libraries( ${TARGET_NAME} ${LIBS} )
+    target_link_libraries( ${GTEST_TARGET} ${LIBS} )
 
 
     #
     # RPATH
     #
-    set_target_properties( ${TARGET_NAME}
+    set_target_properties( ${GTEST_TARGET}
                            PROPERTIES
                              INSTALL_RPATH ${PROJECT_SOURCE_DIR}/lib )
 
@@ -144,7 +159,7 @@ if ( UNIT_TEST )
     #
     set( STRING_TARGETS 
         ${STRING_TARGETS} 
-        ${TARGET_NAME} 
+        ${GTEST_TARGET} 
         )
 
   endif()

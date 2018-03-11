@@ -61,6 +61,65 @@ else()
 
 endif()
 
+
+
+
+####################################################################################
+#
+# CMake Modules
+#
+####################################################################################
+list( APPEND 
+      CMAKE_MODULE_PATH
+      ${CMAKE_CURRENT_SOURCE_DIR} 
+      )
+include( OptionPrinter )
+
+
+
+####################################################################################
+#
+# Setup
+#
+####################################################################################
+if ( UNIT_TEST )
+  
+  # Include if we haven't already
+  include( ExternalProject )
+  set    ( GTEST_INSTALL_DIR ${THIRDPARTY}/lib/ )
+
+  if ( NOT BUILD_THIRDPARTY )
+
+    set( DISABLE_BUILD    BUILD_COMMAND    ${CMAKE_COMMAND} -E echo_append )
+    set( DISABLE_DOWNLOAD DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E echo_append )
+
+  endif() 
+
+  ExternalProject_Add( 
+                      # Target name
+                      gtest
+                      # Turn off certain features
+                      UPDATE_COMMAND      ""
+                      ${DISABLE_DOWNLOAD}
+                      ${DISABLE_BUILD}
+                      # Dowload step
+                      DOWNLOAD_DIR        ${THIRDPARTY}/
+                      GIT_REPOSITORY      https://github.com/google/googletest
+                      GIT_TAG master
+                      # Configure step
+                      SOURCE_DIR          ${THIRDPARTY}/googletest
+                      BINARY_DIR          ${THIRDPARTY}/_build/
+                      # Install step
+                      INSTALL_COMMAND     cp ${THIRDPARTY}/_build/googletest/libgtest.a      ${GTEST_INSTALL_DIR}
+                      COMMAND             cp ${THIRDPARTY}/_build/googletest/libgtest_main.a ${GTEST_INSTALL_DIR}
+                      CMAKE_ARGS          -DBUILD_GMOCK:BOOL=OFF
+                                          -DINSTALL_GMOCK:BOOL=OFF
+                                          -DBUILD_GTEST:BOOL=ON
+                      )
+
+endif()
+
+
 ####################################################################################
 ####################################################################################
 #
@@ -92,17 +151,6 @@ function( capitalize VAR_STRING )
 endfunction( capitalize )
 
 
-####################################################################################
-#
-# \brief Automates the include of test folder and propogation of test variables 
-#
-####################################################################################
-function( include_gtest_folder folder_name )
-
-  
-
-endfunction( include_gtest_folder )
-
 
 ####################################################################################
 #
@@ -122,19 +170,24 @@ function ( setup_resources cur_target res_files )
   if ( NOT EXISTS ${TEST_RESOURCES} )
     add_custom_command ( TARGET ${cur_target} 
                          POST_BUILD
-                         COMMAND mkdir ${TEST_RESOURCES}
-                         COMMAND echo "Built resource directory" 
+                         COMMAND mkdir -p ${TEST_RESOURCES}
+                         COMMAND echo "'${CLR_BOLDMAGENTA}'Built resource directory'${CLR_RESET}'" 
                        )
   endif ()
+
   foreach ( res_file ${res_files} )
     string( REGEX MATCH "([a-zA-Z0-9]|_)+\\..*" simple_res ${res_file} )
     if ( NOT EXISTS ${new_res} )
       message( STATUS "Making resource ${simple_res}" ) 
-      add_custom_command ( TARGET ${TARGET_NAME}
+
+      set( COPY_STRING "Copied ${simple_res} " )
+      pad_string( COPY_STRING ${COPY_STRING} 25 '-' LEFT )
+
+      add_custom_command ( TARGET ${cur_target}
                            POST_BUILD
                            COMMAND cp ${res_file} ${TEST_RESOURCES}/
-                           COMMAND echo "       Copied ${simple_res} to ${TEST_RESOURCES}"
-                         )
+                           COMMAND echo "'${CLR_BOLDCYAN}'${COPY_STRING} '>' ${TEST_RESOURCES}${simple_res}'${CLR_RESET}'"
+                           )
     endif ()
   endforeach()
     
