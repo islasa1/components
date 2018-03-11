@@ -38,7 +38,7 @@ option( BUILD_THIRDPARTY  "Perform steps to checkout and build thirdparty"  OFF 
 option( XX_LIB            "Set to compile XX LIB"                           OFF )
 
 set   ( THIRDPARTY 
-        "${CMAKE_CURRENT_SOURCE_DIR}/../thirdparty" 
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../thirdparty" 
         CACHE STRING 
         "Thirdparty directory" )
 
