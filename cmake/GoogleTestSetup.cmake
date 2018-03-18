@@ -11,7 +11,7 @@
 ####################################################################################
 ##
 ##
-##  File    : CMakeLists.txt
+##  File    : GoogleTestSetup.cmake
 ##  Author  : Anthony Islas
 ##  Purpose : A set of useful functions to setup a Google Test framework
 ##  Group   : cmake
@@ -36,6 +36,15 @@
 ##  License : GNU GPL v3
 ##
 ####################################################################################
+
+
+if ( GOOGLETESTSETUP_CMAKE )
+
+  return()
+
+endif()
+
+set( GOOGLETESTSETUP_CMAKE 1 )
 
 
 ####################################################################################
@@ -205,14 +214,14 @@ endfunction ()
 #         e.g. src/module0/gtest/ will get Module0Tests
 #
 ####################################################################################
-function( auto_test_name PATH TEST_NAME )
+function( auto_test_name PATH REMOVE_DIR TEST_NAME )
 
   get_filename_component( ${TEST_NAME} 
                           ${PATH}
                           ABSOLUTE
                           )
 
-  string( REGEX REPLACE ".*/([a-zA-Z]+)/gtest$" "\\1" ${TEST_NAME} ${${TEST_NAME}} )
+  string( REGEX REPLACE ".*/([a-zA-Z]+)${REMOVE_DIR}$" "\\1" ${TEST_NAME} ${${TEST_NAME}} )
   # string( REGEX MATCH "(\\w+)\\/gtest$" ${TEST_NAME} ${${TEST_NAME}} )
 
   capitalize( ${TEST_NAME} )
@@ -244,4 +253,60 @@ function( auto_test_case test_files test_suffix test_macro test_name )
 
 endfunction( auto_test_case )
 
+
+
+
+function( create_gtest 
+          # SOURCES 
+          # DIRECTORY
+          # RPATH
+          # LIBS
+          # INCLUDES 
+          # RESOURCES 
+          )
+
+  set( OPTIONAL             PRINT_INC_DIR )
+  set( SINGLE_VAL_KEYWORDS  DIRECTORY TARGET INSTALL )
+  set( MULTI_VAL_KEYWORDS   SOURCES INSTALL_RPATH LIBS INCLUDES RESOURCES )
+
+  set( ALL_REQUIRED ${SINGLE_VAL_KEYWORDS} )
+  set( ALL_VARS 
+       ${OPTIONAL}
+       ${SINGLE_VAL_KEYWORDS}
+       ${MULTI_VAL_KEYWORDS} 
+       )
+  set( PREFIX GTEST_ARGS )
+
+  cmake_parse_arguments( ${PREFIX} 
+                         "${OPTIONAL}" 
+                         "${SINGLE_VAL_KEYWORDS}" 
+                         "${MULTI_VAL_KEYWORDS}" 
+                         ${ARGN} 
+                         )
+
+  foreach( REQUIRED_VAR ${ALL_REQUIRED} )
+
+    set( REQUIRED_VAR ${PREFIX}_${REQUIRED_VAR} )
+
+    if ( NOT ${REQUIRED_VAR} )
+
+      message( FATAL_ERROR "Variable ${REQUIRED_VAR} unset" )
+
+    endif()
+
+  endforeach()
+
+  #
+  # No push up to parent scope
+  #
+  foreach( VARIABLE ${ALL_VARS} )
+
+    set( VARIABLE ${PREFIX}_${VARIABLE} )
+
+    set( ${VARIABLE} ${VARIABLE} PARENT_SCOPE )
+    message( STATUS "Set ${VARIABLE} to ${${VARIABLE}}" )
+
+  endforeach()
+
+endfunction()
 

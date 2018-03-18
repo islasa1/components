@@ -68,6 +68,7 @@
 #
 TRANSCHAR  = @
 TRANSCOLOR = G
+FOOBAR     = F
 
 
 #
@@ -111,21 +112,23 @@ SPRITE = "stick_man"
 #Columns
 #         1111111111
 #1234567890123456789
-STARTSPRITE
+  IMAGE
+  {
 @@@@@@@_@@@@@@@@
 @@@@@@(v)@@@@@@@
 @@@@@@/T\\@@@@@@@
 @@@@@@@|@@@@@@@@
 @@@@@@/@\\@@@@@@@
-ENDSPRITE
+  }
 
-STARTCOLOR
+  COLOR
+  {
 BBBBBBBWBBBBBBBB
 BBBBBBWWWBBBBBBB
 BBBBBBWWWBBBBBBB
 BBBBBBBWBBBBBBBB
 BBBBBBWBWBBBBBBB
-ENDCOLOR
+  }
 
 }
 
@@ -159,17 +162,18 @@ ANIM = "walking_man"
   SPRITE = "run_phase1"
   {
 
-FRAMESIZE = 5x15
-FRAMETIME = 1
-USECOLOR = false
+    FRAMESIZE = 5x15
+    FRAMETIME = 1
+    USECOLOR = false
 
-STARTSPRITE
+    IMAGE
+    {
 @@@@@@@_@@@@@@@@
 @@@@@@(>)@@@@@@@   
 @@@@@@/T\\_@@@@@@
 @@@@@@@|@@@@@@@@    
 @@@@@@V \\@@@@@@@
-ENDSRPITE
+    }
 
   }
 
@@ -177,34 +181,36 @@ ENDSRPITE
   SPRITE = "run_phase2"
   {
 
-FRAMESIZE = 5x15
-FRAMETIME = 1
-USECOLOR = false
+    FRAMESIZE = 5x15
+    FRAMETIME = 1
+    USECOLOR = false
 
-STARTSPRITE
+    IMAGE
+    { 
 @@@@@@@_@@@@@@@@
 @@@@@@(>)@@@@@@@   
 @@@@@@<TV@@@@@@@
 @@@@@\\_|@@@@@@@@
 @@@@@@@ |@@@@@@@   
-ENDSRPITE
+    }
 
   }
 
-    SPRITE = "run_phase3"
+  SPRITE = "run_phase3"
   {
 
-FRAMESIZE = 5x15
-FRAMETIME = 1
-USECOLOR = false
+    FRAMESIZE = 5x15
+    FRAMETIME = 1
+    USECOLOR = false
 
-STARTSPRITE
+    IMAGE
+    { 
 @@@@@@@_@@@@@@@@
 @@@@@@(>)@@@@@@@   
 @@@@@@<T|_@@@@@@
 @@@@@@@|@@@@@@@@    
 @@@@@@/ >@@@@@@@   
-ENDSRPITE
+    }
 
   }
 

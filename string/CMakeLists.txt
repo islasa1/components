@@ -72,6 +72,36 @@ if ( UNIT_TEST )
 
   else()
 
+
+  create_gtest( 
+                TARGET StringGtest
+                DIRECTORY
+                  ${CMAKE_CURRENT_SOURCE_DIR}
+
+                INSTALL
+                  ${CMAKE_CURRENT_SOURCE_DIR}/inc
+
+                SOURCES
+                  ${CMAKE_CURRENT_SOURCE_DIR}/foo.bar
+                  ${CMAKE_CURRENT_SOURCE_DIR}/bar.foo
+
+                INSTALL_RPATH
+                  ${CMAKE_CURRENT_SOURCE_DIR}/lib
+
+                LIBS
+                  ${CMAKE_CURRENT_SOURCE_DIR}/lib/foo.so
+
+                INCLUDES
+                  ${CMAKE_CURRENT_SOURCE_DIR}/foo.hpp
+                  ${CMAKE_CURRENT_SOURCE_DIR}/bar.hpp
+
+                RESOURCES
+                  ${CMAKE_CURRENT_SOURCE_DIR}/../foo.txt
+                  ${CMAKE_CURRENT_SOURCE_DIR}/../bar.txt
+
+                PRINT_INC_DIR 
+                )
+
     add_subdirectory ( ${CMAKE_CURRENT_SOURCE_DIR}/gtest )
 
 
@@ -80,7 +110,7 @@ if ( UNIT_TEST )
     # Automate naming of target
     #
     ####################################################################################
-    auto_test_name( ${CMAKE_CURRENT_SOURCE_DIR}/gtest GTEST_NAME )
+    auto_test_name( ${CMAKE_CURRENT_SOURCE_DIR} /gtest GTEST_NAME )
     set           ( GTEST_TARGET "${PROJECT_NAME}${TARGET}Tests" )
 
     message ( "Target Name: " ${GTEST_TARGET} )

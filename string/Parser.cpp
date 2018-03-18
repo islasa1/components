@@ -159,6 +159,10 @@ bool Parser::ParseLines( std::vector< std::string >::iterator &itStart,
     //
     line.clear();
 
+#ifdef DEBUG
+    std::cout << *itStart << std::endl;
+#endif
+
     //
     // Scan lines, iterate across chars
     //
@@ -201,16 +205,34 @@ bool Parser::ParseLines( std::vector< std::string >::iterator &itStart,
       else if ( ( *itStart )[ lineIdx ] == this->scopeStartChar_ )
       {
         //
-        // We have a new element
+        // We have a new child
         //
         bool            success;
         ParseElement_t  childElem;
         lineIdx++;
+
         success = ParseLines( itStart, itEnd, lineIdx, childElem, true );
 
         if ( success )
         {
+          // 
+          // Take the last element line, that is the child's name
+          // 
+          if ( elem.elementLines_.size() == 0 )
+          {
+
+            std::cerr << "Error at: " << __FILE__ << ":" 
+                                      << __LINE__
+                                      << "Child declared without name" << std::endl;
+            return false;
+
+          }
+
+          childElem.name_ = *( elem.elementLines_.end() - 1 );
+          elem.elementLines_.pop_back();
+
           elem.children_.push_back( childElem );
+
         }
         else
         {

@@ -44,6 +44,8 @@ TEST( ComponentsTestsParser, StandardParse )
   elem = parser.ParseFile( filename );
 
   ASSERT_FALSE( elem.elementLines_.empty() );
+
+  elem.print();
   
 }
 
@@ -61,8 +63,11 @@ TEST( ComponentsTestsParser, ModifiedParse )
 
   ASSERT_FALSE( elem.elementLines_.empty() );
 
+  elem.print();
 
 }
+
+
 
 
 

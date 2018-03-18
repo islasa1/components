@@ -41,17 +41,55 @@ namespace string
 //
 typedef struct ParseElementStructure
 {
+
+  ParseElementStructure() 
+  : name_( "main" )
+  , children_   (        )
+  {}
+
   //
-  // Lines that are not part of internal elements
+  // Name of current element
   //
+  std::string name_;
   std::vector< std::string > elementLines_;
 
   //
-  // Nested elements
+  // Immediate children
   //
-  std::vector< struct ParseElementStructure > children_;
+  std::vector< ParseElementStructure > children_;
+
+  void print( std::string indent = "" )
+  {
+
+    std::cout << indent << "ELEMENT : " << name_ << std::endl;
+    indent += "  ";
+
+    for ( std::vector< std::string >::iterator it = elementLines_.begin(); 
+          it != elementLines_.end(); 
+          it++ 
+          )
+    {
+      
+      std::cout << indent << *it << std::endl;
+
+    }
+
+    //
+    // Now print all children
+    //
+    for ( std::vector< ParseElementStructure >::iterator childIt = children_.begin(); 
+          childIt != children_.end(); 
+          childIt++ 
+          )
+    {
+      childIt->print( indent );
+    }
+
+  }
 
 } ParseElement_t; 
+
+
 
 //
 // C-Like parser
