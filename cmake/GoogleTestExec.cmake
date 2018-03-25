@@ -22,17 +22,12 @@
 ##
 ####################################################################################
 
-include( GoogleTestSetup )
-
 ####################################################################################
 #
 # Automate naming of target
 #
 ####################################################################################
-auto_test_name( ${TEST_DIR} OPT_DIR GTEST_NAME )
-set           ( GTEST_TARGET "${PROJECT_NAME}${GTEST_NAME}Tests" )
-
-message ( "Target Name: " ${GTEST_TARGET} )
+message ( "Target Name: " ${GTEST_ARGS_TARGET} )
 
 
 ####################################################################################
@@ -40,12 +35,12 @@ message ( "Target Name: " ${GTEST_TARGET} )
 # executable
 #
 ####################################################################################
-add_executable ( ${GTEST_TARGET}  ${TEST_SOURCES} )
+add_executable ( ${GTEST_ARGS_TARGET}  ${GTEST_ARGS_SOURCES} )
 
 #
 # Depends on thirdparty target ( added by setup module )
 #
-add_dependencies( ${GTEST_TARGET} gtest )
+add_dependencies( ${GTEST_ARGS_TARGET} gtest )
 
 
 ####################################################################################
@@ -61,20 +56,24 @@ add_dependencies( ${GTEST_TARGET} gtest )
 # Resources necessary to run these tests
 #
 ####################################################################################
-setup_resources (${GTEST_TARGET} "${${RESOURCE_FILES}}" )
+setup_resources (${GTEST_ARGS_TARGET} "${GTEST_ARGS_RESOURCES}" )
 
 ####################################################################################
 #
 # Add GTest includes
 #
 ####################################################################################
-target_include_directories ( ${GTEST_TARGET} 
+target_include_directories ( ${GTEST_ARGS_TARGET} 
                               PUBLIC 
-                              ${${GTEST_TEST_INCLUDES}}
+                              ${GTEST_ARGS_INCLUDES}
                               ${GTEST_ROOT}/include 
                               )
 
-print_include_dirs ( ${GTEST_TARGET} )
+if ( GTEST_ARGS_PRINT_INC_DIR )
+
+  print_include_dirs ( ${GTEST_ARGS_TARGET} )
+
+endif()
 
 ####################################################################################
 #
@@ -85,18 +84,26 @@ set ( GTEST_LIBS
       ${GTEST_LIB}
       ${GTEST_LIB_MAIN}
       ${CMAKE_THREAD_LIBS_INIT}
-      ${PROJECT_LIBS}
+      ${GTEST_ARGS_LIBS}
       )
 
-target_link_libraries( ${GTEST_TARGET} ${LIBS} )
+target_link_libraries( ${GTEST_ARGS_TARGET} ${GTEST_LIBS} )
 
+
+
+####################################################################################
+#
+# Install rules
+#
+####################################################################################
 
 #
 # RPATH
 #
-set_target_properties( ${GTEST_TARGET}
+set_target_properties( ${GTEST_ARGS_TARGET}
                        PROPERTIES
-                         INSTALL_RPATH ${GTEST_RPATH} )
+                         INSTALL_RPATH ${GTEST_ARGS_INSTALL_RPATH} )
 
-
-
+install( TARGETS ${GTEST_ARGS_TARGET} 
+         RUNTIME DESTINATION ${GTEST_ARGS_INSTALL}
+         )

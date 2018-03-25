@@ -63,7 +63,7 @@ include( VersionExtract  )
 ####################################################################################
 version_extract_str( ${CMAKE_CURRENT_SOURCE_DIR}/versions.txt PROJECT_VERSION )
 project ( 
-          Components 
+          KomorebiComponents 
           VERSION 
           ${PROJECT_VERSION}
           )
@@ -73,6 +73,12 @@ detailed_print( "PROJECT VERSION" CLR_MAGENTA ${PROJECT_VERSION} CLR_CYAN 14 LEF
 
 
 include_directories ( ${PROJECT_BINARY_DIR} )
+
+#
+# Install locations
+#
+set( RUNTIME_INSTALL ${PROJECT_SOURCE_DIR}/bin )
+set( LIBRARY_INSTALL ${PROJECT_SOURCE_DIR}/lib )
 
 
 ####################################################################################

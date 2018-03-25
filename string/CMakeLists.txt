@@ -17,17 +17,14 @@
 ##  Group   : String
 ##
 ##
-##  License : None
+##  License : GNU GPL v3
 ##
 ####################################################################################
-
-
-set( STRING_TARGETS "" )
 
 #
 # We are creating a target for this directory
 #
-set        (   TARGET KomorebiString )
+set        (   TARGET ${PROJECT_NAME}String )
 add_library( ${TARGET} SHARED ""     )
 
 
@@ -45,16 +42,10 @@ target_include_directories( ${TARGET}
 target_sources( ${TARGET}
                 PRIVATE 
                   ${CMAKE_CURRENT_SOURCE_DIR}/Parser.cpp
+                  ${CMAKE_CURRENT_SOURCE_DIR}/ParserElem.cpp
                   ${CMAKE_CURRENT_SOURCE_DIR}/strutils.cpp 
                   )
 
-#
-# Add to targets
-#
-set( STRING_TARGETS 
-    ${STRING_TARGETS} 
-    ${TARGET} 
-    )
 
 
 ####################################################################################
@@ -72,125 +63,32 @@ if ( UNIT_TEST )
 
   else()
 
-
+  add_subdirectory( ${CMAKE_CURRENT_SOURCE_DIR}/gtest )  
+    
   create_gtest( 
-                TARGET StringGtest
-                DIRECTORY
-                  ${CMAKE_CURRENT_SOURCE_DIR}
+                TARGET 
+                  ${TARGET}Tests
 
                 INSTALL
-                  ${CMAKE_CURRENT_SOURCE_DIR}/inc
+                  ${RUNTIME_INSTALL}
 
                 SOURCES
-                  ${CMAKE_CURRENT_SOURCE_DIR}/foo.bar
-                  ${CMAKE_CURRENT_SOURCE_DIR}/bar.foo
+                  ${TEST_SOURCES}
 
                 INSTALL_RPATH
-                  ${CMAKE_CURRENT_SOURCE_DIR}/lib
+                  ${LIBRARY_INSTALL}
 
                 LIBS
-                  ${CMAKE_CURRENT_SOURCE_DIR}/lib/foo.so
+                  ${TARGET}
 
                 INCLUDES
-                  ${CMAKE_CURRENT_SOURCE_DIR}/foo.hpp
-                  ${CMAKE_CURRENT_SOURCE_DIR}/bar.hpp
+                  ${CMAKE_CURRENT_SOURCE_DIR}
 
                 RESOURCES
-                  ${CMAKE_CURRENT_SOURCE_DIR}/../foo.txt
-                  ${CMAKE_CURRENT_SOURCE_DIR}/../bar.txt
+                  ${RESOURCE_FILES}
 
-                PRINT_INC_DIR 
+                PRINT_INC_DIR FALSE
                 )
-
-    add_subdirectory ( ${CMAKE_CURRENT_SOURCE_DIR}/gtest )
-
-
-    ####################################################################################
-    #
-    # Automate naming of target
-    #
-    ####################################################################################
-    auto_test_name( ${CMAKE_CURRENT_SOURCE_DIR} /gtest GTEST_NAME )
-    set           ( GTEST_TARGET "${PROJECT_NAME}${TARGET}Tests" )
-
-    message ( "Target Name: " ${GTEST_TARGET} )
-
-    #
-    # Setup 
-    #
-    set ( RESOURCE_FILES 
-          ${CMAKE_CURRENT_SOURCE_DIR}/gtest/template.gsf
-          ${CMAKE_CURRENT_SOURCE_DIR}/gtest/fake_template.gsf
-        )
-
-    ####################################################################################
-    #
-    # executable
-    #
-    ####################################################################################
-    add_executable ( ${GTEST_TARGET}  ${TEST_SOURCES} )
-
-    add_dependencies( ${GTEST_TARGET} gtest )
-
-
-    ####################################################################################
-    #
-    # Define test cases for each
-    #
-    ####################################################################################
-
-
-
-    ####################################################################################
-    #
-    # Resources necessary to run these tests
-    #
-    ####################################################################################
-    setup_resources (${GTEST_TARGET} "${RESOURCE_FILES}" )
-
-    ####################################################################################
-    #
-    # Add GTest includes
-    #
-    ####################################################################################
-    target_include_directories ( ${GTEST_TARGET} 
-                                  PUBLIC 
-                                  ${TEST_INCLUDES}
-                                  ${GTEST_ROOT}/include 
-                                  )
-
-    print_include_dirs ( ${GTEST_TARGET} )
-
-    ####################################################################################
-    #
-    # Set default main and gtest libraries
-    #
-    ####################################################################################
-    set ( LIBS 
-          ${GTEST_LIB}
-          ${GTEST_LIB_MAIN}
-          ${CMAKE_THREAD_LIBS_INIT}
-          KomorebiString
-          )
-
-    target_link_libraries( ${GTEST_TARGET} ${LIBS} )
-
-
-    #
-    # RPATH
-    #
-    set_target_properties( ${GTEST_TARGET}
-                           PROPERTIES
-                             INSTALL_RPATH ${PROJECT_SOURCE_DIR}/lib )
-
-
-    #
-    # Add to targets
-    #
-    set( STRING_TARGETS 
-        ${STRING_TARGETS} 
-        ${GTEST_TARGET} 
-        )
 
   endif()
 
@@ -204,7 +102,7 @@ endif()
 # Install rules
 #
 ####################################################################################
-install( TARGETS ${STRING_TARGETS} 
-         RUNTIME DESTINATION ${PROJECT_SOURCE_DIR}/bin
-         LIBRARY DESTINATION ${PROJECT_SOURCE_DIR}/lib
+install( TARGETS ${TARGET} 
+         RUNTIME DESTINATION ${RUNTIME_INSTALL}
+         LIBRARY DESTINATION ${LIBRARY_INSTALL}
          )

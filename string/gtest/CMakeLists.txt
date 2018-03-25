@@ -22,23 +22,33 @@
 ##
 ####################################################################################
 
-set ( LOCAL_TEST_SOURCES 
-      ${CMAKE_CURRENT_SOURCE_DIR}/ParserTest.cpp
-      )
-
-
-set ( LOCAL_TEST_INCLUDES 
-      ${CMAKE_CURRENT_SOURCE_DIR}/.. 
-      )
 
 ####################################################################################
 #
 # Pass up
 #
 ####################################################################################
-set ( TEST_SOURCES  ${TEST_SOURCES}  ${LOCAL_TEST_SOURCES}  PARENT_SCOPE )
-set ( TEST_INCLUDES ${TEST_INCLUDES} ${LOCAL_TEST_INCLUDES} PARENT_SCOPE )
+set (   TEST_SOURCES  
+      ${TEST_SOURCES}  
+      # Put test sources here
+      ${CMAKE_CURRENT_SOURCE_DIR}/ParserTest.cpp
+
+        PARENT_SCOPE 
+        )
+
+set (   TEST_INCLUDES 
+      ${TEST_INCLUDES} 
+      # Put any specific includes here
+      ${CMAKE_CURRENT_SOURCE_DIR}/.. 
+
+        PARENT_SCOPE )
+
+set ( RESOURCE_FILES
+      ${RESOURCE_FILES}
+      # Put any specific resource files required by tests here
+      ${CMAKE_CURRENT_SOURCE_DIR}/template.gsf
+      ${CMAKE_CURRENT_SOURCE_DIR}/fake_template.gsf
 
 
-message ( "Configured " ${TARGET_NAME} )
-message ( "Local Tests: " ${LOCAL_TEST_SOURCES} )
+      PARENT_SCOPE
+      )

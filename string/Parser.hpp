@@ -28,68 +28,15 @@
 #include <vector>
 #include <string>
 
+#include "ParserElem.hpp"
+
 namespace components
 {
-
 
 namespace string
 {
 
-
-//
-// Parse Elements
-//
-typedef struct ParseElementStructure
-{
-
-  ParseElementStructure() 
-  : name_( "main" )
-  , children_   (        )
-  {}
-
-  //
-  // Name of current element
-  //
-  std::string name_;
-  std::vector< std::string > elementLines_;
-
-  //
-  // Immediate children
-  //
-  std::vector< ParseElementStructure > children_;
-
-  void print( std::string indent = "" )
-  {
-
-    std::cout << indent << "ELEMENT : " << name_ << std::endl;
-    indent += "  ";
-
-    for ( std::vector< std::string >::iterator it = elementLines_.begin(); 
-          it != elementLines_.end(); 
-          it++ 
-          )
-    {
-      
-      std::cout << indent << *it << std::endl;
-
-    }
-
-    //
-    // Now print all children
-    //
-    for ( std::vector< ParseElementStructure >::iterator childIt = children_.begin(); 
-          childIt != children_.end(); 
-          childIt++ 
-          )
-    {
-      childIt->print( indent );
-    }
-
-  }
-
-} ParseElement_t; 
-
-
+class ParserElem;
 
 //
 // C-Like parser
@@ -108,7 +55,7 @@ public:
 
   virtual ~Parser( );
 
-  ParseElement_t ParseFile ( std::string path );
+  ParserElem ParseFile ( std::string path );
 
 private:
   //
@@ -137,7 +84,7 @@ private:
   bool ParseLines( std::vector< std::string >::iterator &itStart, 
                    std::vector< std::string >::iterator  itEnd,
                    int                                  &lineIdx,
-                   ParseElement_t                       &elem, 
+                   ParserElem                           &elem, 
                    bool                                  isChild );
 
 

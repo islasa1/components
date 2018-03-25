@@ -22,13 +22,13 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////
 
+#include "Parser.hpp"
 
 #include <iostream>
 #include <fstream>
 #include <string>
 
 #include "strutils.hpp"
-#include "Parser.hpp"
 
 namespace components
 {
@@ -78,9 +78,9 @@ Parser::~Parser( ) { };
 //  return A set of parsed elements
 //
 //**********************************************************************************
-ParseElement_t Parser::ParseFile ( std::string path )
+ParserElem Parser::ParseFile ( std::string path )
 {
-  ParseElement_t             mainElem;
+  ParserElem                 mainElem;
   std::vector< std::string > lines;
   std::ifstream              ifFile ( path.c_str() );
 
@@ -138,7 +138,7 @@ ParseElement_t Parser::ParseFile ( std::string path )
 bool Parser::ParseLines( std::vector< std::string >::iterator &itStart, 
                          std::vector< std::string >::iterator  itEnd,
                          int                                  &lineIdx,
-                         ParseElement_t                       &elem, 
+                         ParserElem                           &elem, 
                          bool                                  isChild )
 {
   //
@@ -208,7 +208,7 @@ bool Parser::ParseLines( std::vector< std::string >::iterator &itStart,
         // We have a new child
         //
         bool            success;
-        ParseElement_t  childElem;
+        ParserElem  childElem;
         lineIdx++;
 
         success = ParseLines( itStart, itEnd, lineIdx, childElem, true );

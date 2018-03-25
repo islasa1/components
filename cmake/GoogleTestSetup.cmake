@@ -266,10 +266,19 @@ function( create_gtest
           )
 
   set( OPTIONAL             PRINT_INC_DIR )
-  set( SINGLE_VAL_KEYWORDS  DIRECTORY TARGET INSTALL )
+  set( SINGLE_VAL_KEYWORDS  TARGET INSTALL )
   set( MULTI_VAL_KEYWORDS   SOURCES INSTALL_RPATH LIBS INCLUDES RESOURCES )
 
   set( ALL_REQUIRED ${SINGLE_VAL_KEYWORDS} )
+
+  #
+  # Optional single val keywords
+  #
+  set( SINGLE_VAL_KEYWORDS 
+       ${SINGLE_VAL_KEYWORDS}
+       DIRECTORY
+       )
+
   set( ALL_VARS 
        ${OPTIONAL}
        ${SINGLE_VAL_KEYWORDS}
@@ -297,16 +306,18 @@ function( create_gtest
   endforeach()
 
   #
-  # No push up to parent scope
-  #
-  foreach( VARIABLE ${ALL_VARS} )
+  # push up to parent scope
+  # 
+  # foreach( VARIABLE ${ALL_VARS} )
 
-    set( VARIABLE ${PREFIX}_${VARIABLE} )
+  #   set( VARIABLE ${PREFIX}_${VARIABLE} )
 
-    set( ${VARIABLE} ${VARIABLE} PARENT_SCOPE )
-    message( STATUS "Set ${VARIABLE} to ${${VARIABLE}}" )
+  #   set( ${VARIABLE} ${VARIABLE} PARENT_SCOPE )
+  #   message( STATUS "Set ${VARIABLE} to ${${VARIABLE}}" )
 
-  endforeach()
+  # endforeach()
+
+  include( GoogleTestExec )
 
 endfunction()
 

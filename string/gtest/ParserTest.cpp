@@ -34,16 +34,17 @@ namespace string
 {
 
 
+
 TEST( ComponentsTestsParser, StandardParse )
 {
-  Parser parser;
-  ParseElement_t elem;
+  Parser     parser;
+  ParserElem elem;
   std::cout << "Opening file \'" << TEST_RESOURCES
             << "template.gsf\' " << std::endl;
   std::string filename( std::string ( TEST_RESOURCES ) + "template.gsf" );
   elem = parser.ParseFile( filename );
 
-  ASSERT_FALSE( elem.elementLines_.empty() );
+  ASSERT_NE( elem.totalElems(), 0 );
 
   elem.print();
   
@@ -54,14 +55,14 @@ TEST( ComponentsTestsParser, ModifiedParse )
   //
   // Not how you should parse, but tests dynamism of this parser
   //
-  Parser parser( '%', '\\', '[', ']' );
-  ParseElement_t elem;
+  Parser     parser( '%', '\\', '[', ']' );
+  ParserElem elem;
   std::cout << "Opening file \'"      << TEST_RESOURCES
             << "fake_template.gsf\' " << std::endl;
   std::string filename( std::string ( TEST_RESOURCES ) + "fake_template.gsf" );
   elem = parser.ParseFile( filename );
 
-  ASSERT_FALSE( elem.elementLines_.empty() );
+  ASSERT_NE( elem.totalElems(), 0 );
 
   elem.print();
 
