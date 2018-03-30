@@ -1,14 +1,14 @@
-////////////////////////////////////////////////////////////////////////////////////
-//
-//     _____    ____ _       ____ _        __ _      __ _  __ _  ______ _   ___ _
-//    / /| |]  |  __ \\     / ___ \\      / \ \\    |   \\/   |]|  _____|] / ___|]
-//   / //| |]  | |] \ \\   | |]  \_|]    / //\ \\   | |\ / /| |]| |]___ _ ( ((_ _
-//  / //_| |]_ | |]  ) ))  | |]  __ _   / _____ \\  | |]\_/ | |]|  _____|] \___ \\
-// |_____   _|]| |]_/ //   | |]__/  |] / //    \ \\ | |]    | |]| |]___ _   ___) ))
-//       |_|]  |_____//     \_____/|]]/_//      \_\\|_|]    |_|]|_______|] |____//
-// 
-//
-////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//     _____    ____ _       ____ _        __ _      __ _  __ _  ______ _   ___ _   //
+//    / /| |]  |  __ \\     / ___ \\      / \ \\    |   \\/   |]|  _____|] / ___|]  //
+//   / //| |]  | |] \ \\   | |]  \_|]    / //\ \\   | |\ / /| |]| |]___ _ ( ((_ _   //
+//  / //_| |]_ | |]  ) ))  | |]  __ _   / _____ \\  | |]\_/ | |]|  _____|] \___ \\  //
+// |_____   _|]| |]_/ //   | |]__/  |] / //    \ \\ | |]    | |]| |]___ _   ___) )) //
+//       |_|]  |_____//     \_____/|]]/_//      \_\\|_|]    |_|]|_______|] |____//  //
+//                                                                                  //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
 //
 //
 //  File    : Clock.hpp
@@ -56,8 +56,11 @@
 
 #include <vector>
 #include <functional>
+#include <thread>
+#include <mutex>
+#include <list>
 
-class std::thread;
+#include "Event.hpp"
 
 namespace components
 {
@@ -71,9 +74,6 @@ public:
   Clock();
   ~Clock();
   
-  static bool synchronize ( std::vector< Clock& > vClocks );
-  static bool desyncronize( std::vector< Clock& > vClocks );
-
   //
   // Can be synchronized with other Clocks
   //
@@ -81,21 +81,7 @@ public:
   bool stop( );
   bool pause( );
 
-  //
-  // Cannot be synchronized
-  //
-  bool startUnique( );
-  bool stopUnique( );
-  bool pauseUnique( );
-
-  void setFrequency( double fp64Freq );
-  void setTimeMillis( unsigned int ui32Delay );
-  void setTimeNano  ( unsigned int ui32Delay );
-
-  void setPipeline() { bPipelined_ = true;  }
-  void setParallel() { bPipelined_ = false; }
-
-  void registerResource( Event& rEvent, unsigned int ui32Order = -1 )
+  void registerResource( std::pair< Event, unsigned int > e, int order = -1 );
 
   //
   // Synchronize starts, stops & pauses
@@ -106,21 +92,15 @@ private:
 
   void update( );
 
-  unsigned int ui32Delay_;
+  unsigned int delay_;
 
-  std::thread             t_Timer_;
+  bool         done_;
 
-  std::shared_ptr< std::mutex >              m_spPauseSync_;
-  std::shared_ptr< std::condition_variable > cv_spPauseSync_;
+  std::thread  tTimer_;
+  std::mutex   mPause_;
 
-  std::shared_ptr< std::mutex >              m_spPauseUnique_;
-  std::shared_ptr< std::condition_variable > cv_spPauseUnique_;
-
-  bool bDone_;
-  bool bPipelined_;
-
-  std::list< Event& >::iterator itEvent_;
-  std::list< Event& > lEvents_;
+  std::list< std::pair< Event, unsigned int > >::iterator itEvent_;
+  std::list< std::pair< Event, unsigned int > >           events_;
 
 
 };

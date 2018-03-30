@@ -1,14 +1,14 @@
-////////////////////////////////////////////////////////////////////////////////////
-//
-//     _____    ____ _       ____ _        __ _      __ _  __ _  ______ _   ___ _
-//    / /| |]  |  __ \\     / ___ \\      / \ \\    |   \\/   |]|  _____|] / ___|]
-//   / //| |]  | |] \ \\   | |]  \_|]    / //\ \\   | |\ / /| |]| |]___ _ ( ((_ _
-//  / //_| |]_ | |]  ) ))  | |]  __ _   / _____ \\  | |]\_/ | |]|  _____|] \___ \\
-// |_____   _|]| |]_/ //   | |]__/  |] / //    \ \\ | |]    | |]| |]___ _   ___) ))
-//       |_|]  |_____//     \_____/|]]/_//      \_\\|_|]    |_|]|_______|] |____//
-// 
-//
-////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//     _____    ____ _       ____ _        __ _      __ _  __ _  ______ _   ___ _   //
+//    / /| |]  |  __ \\     / ___ \\      / \ \\    |   \\/   |]|  _____|] / ___|]  //
+//   / //| |]  | |] \ \\   | |]  \_|]    / //\ \\   | |\ / /| |]| |]___ _ ( ((_ _   //
+//  / //_| |]_ | |]  ) ))  | |]  __ _   / _____ \\  | |]\_/ | |]|  _____|] \___ \\  //
+// |_____   _|]| |]_/ //   | |]__/  |] / //    \ \\ | |]    | |]| |]___ _   ___) )) //
+//       |_|]  |_____//     \_____/|]]/_//      \_\\|_|]    |_|]|_______|] |____//  //
+//                                                                                  //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
 //
 //
 //  File    : Clock.cpp
@@ -26,7 +26,6 @@
 
 #include <cmath>
 #include <exception>
-#include <thread>
 #include <chrono>
 
 
@@ -36,134 +35,55 @@ namespace components
 namespace timing
 {
 
-//**********************************************************************************
-//
-//  Clock::Clock
-//
-//  \brief CTOR
-//
-//  \return Clock
-//
-//**********************************************************************************
-Clock::Clock( ) 
-  : ui3264Delay_( 1 )
-  , bPipelined_ ( true )
-  , done_       ( false )
+///**********************************************************************************
+///
+///  \function Clock::Clock
+///
+///  \brief    ctor
+///
+///**********************************************************************************
+Clock::Clock( )
+  : delay_( 1 )
+  , done_ ( false )
 {} // Clock::Clock
 
-//**********************************************************************************
-//
-//  Clock::~Clock
-//
-//  \brief DTOR
-//
-//  \return none
-//
-//**********************************************************************************
+
+///**********************************************************************************
+///
+///  \function Clock::~Clock
+///
+///  \brief    DTOR
+///
+///**********************************************************************************
 Clock::~Clock( )
 {
-  done = true;
+  done_ = true;
 
-  if ( t_Timer_.joinable() )
+  if ( tTimer_.joinable() )
   {
-    t_Timer_.join();
+    tTimer_.join();
   }
 
 } // Clock::~Clock
 
-//**********************************************************************************
-//
-//  Clock::synchronize
-//
-//  \brief Synchronize all clocks in the vector
-//  
-//  \param vClocks
-//   
-//  Synchronize the Sync mutexes and conditional variables between all clocks
-//
-//  \return bool
-//
-//**********************************************************************************
-bool Clock::synchronize( std::vector< Clock& > vClocks )
-{
-  if ( vClocks.size( ) < 2 ) // 1 or 0 clocks, nothing to sync 
-  {
-    return true; // Technically synced
-  }
-  //
-  // Grab the first Clock's info
-  // 
-  std::shared_ptr< std::mutex >                m_sp  = vClocks[ 0 ].m_spPauseSync_;
-  std::shared_ptr< std::conditional_variable > cv_sp = vClocks[ 0 ].cv_spPauseSync_;
 
-  if ( m_sp.use_count( ) == 0 && cv_sp.use_count( ) == 0 )
-  {
-    m_sp = std::make_shared< std::mutex >( );
-  }
-  else if ( m_sp.use_count( ) != cv_sp.use_count( ) )
-  {
-    // Somthing is off
-    //\todo This should probably be a throw
-    return false;
-  }
-  // else we already have a sync spot
-
-  for (
-        std::vector< Clock& >::iterator it = vClocks.begin(); 
-        it != vClocks.end(); 
-        it++
-        )
-  {
-    //
-    // Synchronize the clocks, note you may only be synched with one pause group
-    //
-
-  }
-
-
-  
-} // Clock::synchronize
-
-
-//**********************************************************************************
-//
-//  Clock::desynchronize
-//
-//  \brief Desynchronize all clocks in the vector
-// 
-//  \param vClocks
-//  
-//  Desynchronizes all the Sync mutexes of the clock if they are linked
-//
-//  \return bool
-//
-//**********************************************************************************
-bool Clock::desynchronize( std::vector< Clocks& > vClocks )
-{
-  
-
-
-} // Clock::desynchronize
-
-
-
-//**********************************************************************************
-//
-//  Clock::start
-//
-//  \brief Starts the clock
-// 
-//  Initializes the clock in a dedicated timing thread
-//
-//  \return none
-//
-//**********************************************************************************
+///**********************************************************************************
+///
+///  \function Clock::start
+///
+///  \brief    Starts the clock
+/// 
+///            Initializes the clock in a dedicated timing thread
+///
+///  \return   true
+///
+///**********************************************************************************
 bool Clock::start( )
 {
-  if ( !t_Timer_.joinable() )
+  if ( !tTimer_.joinable() )
   {
 
-    t_Timer_ = std::thread( this->update );
+    tTimer_ = std::thread( &Clock::update, this );
 
   }
   else
@@ -171,7 +91,7 @@ bool Clock::start( )
     //
     // We were paused
     //
-    m_Pause_.unlock();
+    mPause_.unlock();
   }
 
   return true;
@@ -193,16 +113,16 @@ bool Clock::start( )
 bool Clock::stop( )
 {
   
-  if ( t_Timer_.joinable( ) )
+  if ( tTimer_.joinable( ) )
   {
     // Stop loop
-    done = true;
+    done_ = true;
 
     try 
     {
-      t_Timer_.join( );
+      tTimer_.join( );
     }
-    catch
+    catch( ... )
     {
       //\todo AI: Add some logging info and try to diagnose
       return false;
@@ -219,22 +139,22 @@ bool Clock::stop( )
 
 } // Clock::stop
 
-//**********************************************************************************
-//
-//  Clock::pause
-//
-//  \brief Pause the clock
-// 
-//  Pauses the clock temporarily, must be restarted with start
-//
-//  \return none
-//
-//**********************************************************************************
-void Clock::pause( )
+///**********************************************************************************
+///
+///  \function Clock::pause
+///
+///  \brief    Pause the clock
+/// 
+///            Pauses the clock temporarily, must be restarted with start
+///
+///  \return bool - whether the clock was able to be paused
+///
+///**********************************************************************************
+bool Clock::pause( )
 {
   try
   {
-    m_Pause_.lock( );
+    mPause_.lock( );
   } 
   catch( ... )
   {
@@ -250,133 +170,88 @@ void Clock::pause( )
 
 
 
-//**********************************************************************************
-//
-//  Clock::setFrequency
-//
-//  \brief Set Clock Frequency in Hz
-// 
-//  \param fp64Freq 
-// 
-//  Adjust internal clock to a delay closest to achieve desired frequency
-//
-//  \return none
-//
-//**********************************************************************************
-void Clock::setFrequency( double fp64Freq )
+///**********************************************************************************
+///
+///  \function Clock::registerResource
+///
+///  \brief    Register a resource to this particular clock
+///  
+///            Register a particular event to this particular clock, assigning it an 
+///            order. Should order conflict, the previous event will be moved back 
+///            ( adjusting all others behind as well ).
+///
+///  \return none
+///
+///**********************************************************************************
+void Clock::registerResource( 
+                              std::pair< Event, unsigned int > e, 
+                              int order 
+                              )
 {
-  
-  ui32Delay_ = static_cast< unsigned int >(
-                pow( 
-                    fp64Freq, 
-                    static_cast< double >( -1 ) 
-                    ) 
-                * 1e9
-              );
 
-} // Clock::setFrequency
+  // Attempt to lock the clock and safely add
+  mPause_.lock();
 
-//**********************************************************************************
-//
-//  Clock::setTimeMillis
-//
-//  \brief Set Clock Delay in Milliseconds
-// 
-//  \param ui32Delay 
-// 
-//  Adjust internal clock to given delay with millisecond accuracy
-//
-//  \return none
-//
-//**********************************************************************************
-void Clock::setTimeMillis( unsigned int ui32Delay )
-{
-  
-  ui32Delay_ = ui32Delay * 1000;
-
-} // Clock::setTimeMillis
-
-
-
-//**********************************************************************************
-//
-//  Clock::setTimeNano
-//
-//  \brief Set Clock Delay in Nanoseconds
-// 
-//  \param ui32Delay
-//
-//  \return none
-//
-//**********************************************************************************
-void Clock::setTimeNano( unsigned int ui32Delay )
-{
-    
-  ui32Delay_ = ui32Delay;
-
-} // Clock::setTimeNano
-
-
-
-
-//**********************************************************************************
-//
-//  Clock::registerResource
-//
-//  \brief Register a resource to this particular clock
-// 
-//  \param m_Resource 
-//  \param order
-//  
-//  Register a particular event to this particular clock, assigning it an order. Should 
-//  order conflict, the previous event will be moved back ( adjusting all others 
-//  behind as well ).
-//
-//  \return none
-//
-//**********************************************************************************
-void Clock::registerResource( Event& e, unsigned int order )
-{
   if ( 
       order < 0 ||
-      order >= lEvents.size()
+      order >= static_cast< int >( events_.size() )
       )
   {
 
-    lEvents.push_back( e );
+    events_.push_back( e );
   }
   else // Valid order
   {
-    lEvents.insert( lEvents.begin() + order, e );
+    
+    itEvent_ = events_.begin();
+    std::advance( itEvent_, order );
+
+    events_.insert( itEvent_, e );
+
   }
+
+  mPause_.unlock();
 
 } // Clock::registerResource
 
 
-//**********************************************************************************
-//
-//  Clock::update
-//
-//  \brief Thread running time updates
-// 
-//  \param clock 
-// 
-//  Threaded update of resources, sleeping for a given time and then releasing locks
-//
-//  \return none
-//
-//**********************************************************************************
-void Clock::update( Clock& clock )
+///**********************************************************************************
+///
+///  \function Clock::update
+///
+///  \brief    Thread running time updates
+/// 
+///            Threaded update of resources, sleeping for a given time and then 
+///            releasing locks
+///
+///  \return none
+///
+///**********************************************************************************
+void Clock::update( )
 {
 
   while ( !done_ )
   {
 
+    // Time stamp
 
+    mPause_.lock();
 
-    std::this_thread::sleep_for( std::chrono::milliseconds( ulDelay_ ) );
+    for ( itEvent_ = events_.begin();
+          itEvent_ != events_.end();
+          itEvent_++ )
+    {
 
+      itEvent_->first.callback();
 
+    }
+    
+    // Do delta time and diff with delay_
+    std::this_thread::sleep_for( std::chrono::milliseconds( delay_ ) );
+
+    mPause_.unlock();
+
+  }
 
 } // Clock::update
 

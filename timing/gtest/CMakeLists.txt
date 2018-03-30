@@ -14,7 +14,7 @@
 ##  File    : CMakeLists.txt
 ##  Author  : Anthony Islas
 ##  Purpose : Directions for CMake to auto-generate Makefiles
-##  Group   : Components
+##  Group   : timing
 ##
 ##  TODO    : None
 ##
@@ -31,10 +31,10 @@
 set (   TEST_SOURCES  
       ${TEST_SOURCES}  
       # Put test sources here
-      ${CMAKE_CURRENT_SOURCE_DIR}/ParserTest.cpp
+      # ${CMAKE_CURRENT_SOURCE_DIR}/ParserTest.cpp
 
         PARENT_SCOPE 
-      )
+    )
 
 set (   TEST_INCLUDES 
       ${TEST_INCLUDES} 
@@ -47,9 +47,5 @@ set (   TEST_INCLUDES
 set ( RESOURCE_FILES
       ${RESOURCE_FILES}
       # Put any specific resource files required by tests here
-      ${CMAKE_CURRENT_SOURCE_DIR}/template.gsf
-      ${CMAKE_CURRENT_SOURCE_DIR}/fake_template.gsf
-
-
       PARENT_SCOPE
       )

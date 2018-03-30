@@ -1,14 +1,14 @@
-////////////////////////////////////////////////////////////////////////////////////
-//
-//     _____    ____ _       ____ _        __ _      __ _  __ _  ______ _   ___ _
-//    / /| |]  |  __ \\     / ___ \\      / \ \\    |   \\/   |]|  _____|] / ___|]
-//   / //| |]  | |] \ \\   | |]  \_|]    / //\ \\   | |\ / /| |]| |]___ _ ( ((_ _
-//  / //_| |]_ | |]  ) ))  | |]  __ _   / _____ \\  | |]\_/ | |]|  _____|] \___ \\
-// |_____   _|]| |]_/ //   | |]__/  |] / //    \ \\ | |]    | |]| |]___ _   ___) ))
-//       |_|]  |_____//     \_____/|]]/_//      \_\\|_|]    |_|]|_______|] |____//
-// 
-//
-////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//     _____    ____ _       ____ _        __ _      __ _  __ _  ______ _   ___ _   //
+//    / /| |]  |  __ \\     / ___ \\      / \ \\    |   \\/   |]|  _____|] / ___|]  //
+//   / //| |]  | |] \ \\   | |]  \_|]    / //\ \\   | |\ / /| |]| |]___ _ ( ((_ _   //
+//  / //_| |]_ | |]  ) ))  | |]  __ _   / _____ \\  | |]\_/ | |]|  _____|] \___ \\  //
+// |_____   _|]| |]_/ //   | |]__/  |] / //    \ \\ | |]    | |]| |]___ _   ___) )) //
+//       |_|]  |_____//     \_____/|]]/_//      \_\\|_|]    |_|]|_______|] |____//  //
+//                                                                                  //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
 //
 //
 //  File    : Parser.hpp
@@ -107,7 +107,7 @@ ParserElem Parser::ParseFile ( std::string path )
 
     std::vector< std::string >::iterator itStart = lines.begin();
     std::vector< std::string >::iterator itEnd   = lines.end();
-    int lineIdx = 0;
+    unsigned int lineIdx = 0;
 
     ParseLines( itStart, itEnd, lineIdx, mainElem, false);
   }
@@ -137,7 +137,7 @@ ParserElem Parser::ParseFile ( std::string path )
 //**********************************************************************************
 bool Parser::ParseLines( std::vector< std::string >::iterator &itStart, 
                          std::vector< std::string >::iterator  itEnd,
-                         int                                  &lineIdx,
+                         unsigned int                         &lineIdx,
                          ParserElem                           &elem, 
                          bool                                  isChild )
 {
@@ -150,7 +150,7 @@ bool Parser::ParseLines( std::vector< std::string >::iterator &itStart,
   // Parse lines into elements:
   //  Scan for everything that is not a comment
   // 
-  for ( itStart;
+  for ( ;
         itStart != itEnd;
         itStart++ )
   {
@@ -169,7 +169,7 @@ bool Parser::ParseLines( std::vector< std::string >::iterator &itStart,
     if ( (*itStart )[ 0 ] == this->commentChar_ ) 
       continue; // skip
 
-    for ( lineIdx; lineIdx < itStart->length(); lineIdx++ )
+    for ( ; lineIdx < itStart->length(); lineIdx++ )
     {
       if ( ( *itStart )[ lineIdx ] == this->escapeChar_ )
       {
