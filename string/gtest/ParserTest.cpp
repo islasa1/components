@@ -27,18 +27,14 @@
 #include "Parser.hpp"
 #include "config.hpp"
 
-namespace components
+namespace gtest
 {
-
-namespace string
-{
-
 
 
 TEST( ComponentsTestsParser, StandardParse )
 {
-  Parser     parser;
-  ParserElem elem;
+  components::string::Parser     parser;
+  components::string::ParserElem elem;
   std::cout << "Opening file \'" << TEST_RESOURCES
             << "template.gsf\' " << std::endl;
   std::string filename( std::string ( TEST_RESOURCES ) + "template.gsf" );
@@ -55,8 +51,8 @@ TEST( ComponentsTestsParser, ModifiedParse )
   //
   // Not how you should parse, but tests dynamism of this parser
   //
-  Parser     parser( '%', '\\', '[', ']' );
-  ParserElem elem;
+  components::string::Parser     parser( '%', '\\', '[', ']' );
+  components::string::ParserElem elem;
   std::cout << "Opening file \'"      << TEST_RESOURCES
             << "fake_template.gsf\' " << std::endl;
   std::string filename( std::string ( TEST_RESOURCES ) + "fake_template.gsf" );
@@ -68,10 +64,4 @@ TEST( ComponentsTestsParser, ModifiedParse )
 
 }
 
-
-
-
-
-} // namespace string
-
-} // namespace components
+} // namespace gtest

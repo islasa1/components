@@ -308,14 +308,14 @@ function( create_gtest
   #
   # push up to parent scope
   # 
-  # foreach( VARIABLE ${ALL_VARS} )
+  foreach( VARIABLE ${ALL_VARS} )
 
-  #   set( VARIABLE ${PREFIX}_${VARIABLE} )
+    set( VARIABLE ${PREFIX}_${VARIABLE} )
 
   #   set( ${VARIABLE} ${VARIABLE} PARENT_SCOPE )
-  #   message( STATUS "Set ${VARIABLE} to ${${VARIABLE}}" )
+    message( STATUS "Set ${VARIABLE} to ${${VARIABLE}}" )
 
-  # endforeach()
+  endforeach()
 
   include( GoogleTestExec )
 

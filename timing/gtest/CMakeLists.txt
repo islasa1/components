@@ -31,7 +31,7 @@
 set (   TEST_SOURCES  
       ${TEST_SOURCES}  
       # Put test sources here
-      # ${CMAKE_CURRENT_SOURCE_DIR}/ParserTest.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/EventTest.cpp
 
         PARENT_SCOPE 
     )

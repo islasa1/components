@@ -41,7 +41,8 @@ target_include_directories( ${TARGET}
 #
 target_sources( ${TARGET}
                 PRIVATE 
-                  Clock.cpp
+                  ${CMAKE_CURRENT_SOURCE_DIR}/Clock.cpp
+                  ${CMAKE_CURRENT_SOURCE_DIR}/Event.cpp
               )
 
 

@@ -42,7 +42,6 @@ set   ( THIRDPARTY
         CACHE STRING 
         "Thirdparty directory" )
 
-
 #
 # Get our modules after options
 #

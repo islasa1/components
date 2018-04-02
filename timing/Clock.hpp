@@ -54,7 +54,6 @@
 #ifndef __TIMING_CLOCK_H__
 #define __TIMING_CLOCK_H__
 
-#include <vector>
 #include <functional>
 #include <thread>
 #include <mutex>
