@@ -73,6 +73,17 @@ public:
 
   }
 
+  void callback_x(  
+                  unsigned int *arr, 
+                  unsigned int idx0,
+                  unsigned int idx1 
+                  )
+  {
+
+    arr[ idx1 ] = arr[ idx0 ]; 
+
+  }
+
 
   virtual void SetUp( )
   {
@@ -268,16 +279,69 @@ TEST_F( EventTest, AddSubevent )
 }
 
 
-TEST_F( EventTest, DISABLED_RemoveSubevent )
+TEST_F( EventTest, RemoveSubevent )
 {
 
+  singleCallback();
+
+  components::timing::Event *sub( new components::timing::Event() );
+  sub->setCallback( &EventTest::callback_1, this );
+
+  unsigned int previousCounter = counter_;
+
+
+  ASSERT_TRUE( e_.addSubevent( sub, "single" ) );
+
+  e_.callback( );
+
+  ASSERT_NE( previousCounter, counter_ );
+
+
+  // Calls single twice
+  ASSERT_EQ( previousCounter + 2, counter_ );
+
+
+  ASSERT_TRUE( e_.removeSubevent( "single" ) );
+
+  singleCallback();
+
+
+  ASSERT_FALSE( e_.removeSubevent( "single" ) );
+
+
+  delete sub;
 
 }
 
 
-TEST_F( EventTest, DISABLED_GetSubevent )
+TEST_F( EventTest, GetSubevent )
 {
 
+  singleCallback();
+  std::vector< components::timing::Event > events( 4 );
+
+  events[ 0 ].setCallback( &EventTest::callback_3, this        );
+  events[ 1 ].setCallback( &EventTest::callback_4, this, false );
+  events[ 2 ].setCallback( &EventTest::callback_1, this        );
+  events[ 3 ].setCallback( &EventTest::callback_4, this, false );
+
+  e_.addSubevent( &events[ 0 ], "first"  );
+  e_.addSubevent( &events[ 1 ], "second" );
+
+  ASSERT_NE( nullptr, e_.getSubevent( "first"   ) );
+  ASSERT_NE( nullptr, e_.getSubevent( "second"  ) );
+
+  ASSERT_EQ( &events[ 0 ], e_.getSubevent( "first"   ) );
+  ASSERT_EQ( &events[ 1 ], e_.getSubevent( "second"  ) );
+
+  ASSERT_EQ( nullptr, e_.getSubevent( "third"  ) );
+  ASSERT_EQ( nullptr, e_.getSubevent( "fourth" ) );
+
+
+  e_.getSubevent( "first"  )->addSubevent( &events[ 2 ], "third"  );
+  e_.getSubevent( "second" )->addSubevent( &events[ 3 ], "fourth" );
+
+  components::timing::Event::print( e_ );
 
 }
 
@@ -357,10 +421,52 @@ TEST_F( EventTest, PrintEvents )
 }
 
 
-TEST_F( EventTest, DISABLED_OrderedEvents )
+TEST_F( EventTest, OrderedEvents )
 {
 
+  unsigned int testArray[ 5 ];
 
+  memset( testArray, 0, sizeof( testArray[ 0 ] ) * 5 );
+
+  testArray[ 0 ] = 7;
+
+  ASSERT_EQ( 7, testArray[ 0 ] );
+  ASSERT_EQ( 0, testArray[ 1 ] );
+  ASSERT_EQ( 0, testArray[ 2 ] );
+  ASSERT_EQ( 0, testArray[ 3 ] );
+  ASSERT_EQ( 0, testArray[ 4 ] );
+
+  std::vector< components::timing::Event > events( 5 );
+
+  events[ 0 ].setCallback( &EventTest::callback_x, this, testArray, 0, 1 );
+  events[ 1 ].setCallback( &EventTest::callback_x, this, testArray, 1, 2 );
+  events[ 2 ].setCallback( &EventTest::callback_x, this, testArray, 2, 3 );
+  events[ 3 ].setCallback( &EventTest::callback_x, this, testArray, 3, 4 );
+  events[ 4 ].setCallback( &EventTest::callback_x, this, testArray, 4, 0 );
+
+
+  for(  
+      unsigned int i = 0; 
+      i < events.size();
+      i++
+      )
+  {
+
+    std::stringstream ss;
+
+    ss << i;
+
+    e_.addSubevent( &events[ i ], ss.str() );
+
+  }
+
+  e_.callback();
+
+  ASSERT_EQ( 7, testArray[ 0 ] );
+  ASSERT_EQ( 7, testArray[ 1 ] );
+  ASSERT_EQ( 7, testArray[ 2 ] );
+  ASSERT_EQ( 7, testArray[ 3 ] );
+  ASSERT_EQ( 7, testArray[ 4 ] );
 
 }
 
