@@ -82,7 +82,7 @@ if ( UNIT_TEST )
                   ${TARGET}
 
                 INCLUDES
-                  ${CMAKE_CURRENT_SOURCE_DIR}
+                  ${TEST_INCLUDES}
 
                 RESOURCES
                   ${RESOURCE_FILES}

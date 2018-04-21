@@ -24,19 +24,19 @@
 
 #include "gtest/gtest.h"
 
-#include "Event.hpp"
+#include "timing/Event.hpp"
 
 namespace gtest
 {
 
-class EventTest : public ::testing::Test
+class TEST_CASE : public ::testing::Test
 {
 public:
-  EventTest() 
+  TEST_CASE() 
   : counter_( 0 )
   {}
 
-  ~EventTest() 
+  ~TEST_CASE() 
   {}
   
 
@@ -98,7 +98,7 @@ public:
 
     unsigned int previousCounter = counter_;
 
-    e_.setCallback( &EventTest::callback_1, this );
+    e_.setCallback( &TEST_CASE::callback_1, this );
 
     ASSERT_EQ( previousCounter, counter_ );
 
@@ -116,7 +116,7 @@ public:
 
     unsigned int previousCounter = counter_;
 
-    e_.setCallback( &EventTest::callback_2, this, 2 );
+    e_.setCallback( &TEST_CASE::callback_2, this, 2 );
 
     if ( previousCounter != counter_ )
     {
@@ -158,8 +158,7 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-
-TEST_F( EventTest, EmptyEvent )
+TEST_F( TEST_CASE, EmptyEvent )
 {
 
   unsigned int previousCounter = counter_;
@@ -173,7 +172,7 @@ TEST_F( EventTest, EmptyEvent )
 }
 
 
-TEST_F( EventTest, SingleCallback )
+TEST_F( TEST_CASE, SingleCallback )
 {
 
   singleCallback();
@@ -181,7 +180,7 @@ TEST_F( EventTest, SingleCallback )
 }
 
 
-TEST_F( EventTest, ArgumentCallback )
+TEST_F( TEST_CASE, ArgumentCallback )
 {
 
   doubleCallback();
@@ -189,7 +188,7 @@ TEST_F( EventTest, ArgumentCallback )
 }
 
 
-TEST_F( EventTest, ReassignCallback )
+TEST_F( TEST_CASE, ReassignCallback )
 {
 
   singleCallback();
@@ -203,7 +202,7 @@ TEST_F( EventTest, ReassignCallback )
 
 
 
-TEST_F( EventTest, DisableEvent )
+TEST_F( TEST_CASE, DisableEvent )
 {
 
   doubleCallback();
@@ -217,7 +216,7 @@ TEST_F( EventTest, DisableEvent )
 }
 
 
-TEST_F( EventTest, ReenableEvent )
+TEST_F( TEST_CASE, ReenableEvent )
 {
 
   doubleCallback();
@@ -239,7 +238,7 @@ TEST_F( EventTest, ReenableEvent )
 
 
 
-TEST_F( EventTest, AddSubevent )
+TEST_F( TEST_CASE, AddSubevent )
 {
 
   singleCallback();
@@ -247,7 +246,7 @@ TEST_F( EventTest, AddSubevent )
   doubleCallback();
 
   components::timing::Event *sub( new components::timing::Event() );
-  sub->setCallback( &EventTest::callback_1, this );
+  sub->setCallback( &TEST_CASE::callback_1, this );
 
   unsigned int previousCounter = counter_;
 
@@ -279,13 +278,13 @@ TEST_F( EventTest, AddSubevent )
 }
 
 
-TEST_F( EventTest, RemoveSubevent )
+TEST_F( TEST_CASE, RemoveSubevent )
 {
 
   singleCallback();
 
   components::timing::Event *sub( new components::timing::Event() );
-  sub->setCallback( &EventTest::callback_1, this );
+  sub->setCallback( &TEST_CASE::callback_1, this );
 
   unsigned int previousCounter = counter_;
 
@@ -314,16 +313,16 @@ TEST_F( EventTest, RemoveSubevent )
 }
 
 
-TEST_F( EventTest, GetSubevent )
+TEST_F( TEST_CASE, GetSubevent )
 {
 
   singleCallback();
   std::vector< components::timing::Event > events( 4 );
 
-  events[ 0 ].setCallback( &EventTest::callback_3, this        );
-  events[ 1 ].setCallback( &EventTest::callback_4, this, false );
-  events[ 2 ].setCallback( &EventTest::callback_1, this        );
-  events[ 3 ].setCallback( &EventTest::callback_4, this, false );
+  events[ 0 ].setCallback( &TEST_CASE::callback_3, this        );
+  events[ 1 ].setCallback( &TEST_CASE::callback_4, this, false );
+  events[ 2 ].setCallback( &TEST_CASE::callback_1, this        );
+  events[ 3 ].setCallback( &TEST_CASE::callback_4, this, false );
 
   e_.addSubevent( &events[ 0 ], "first"  );
   e_.addSubevent( &events[ 1 ], "second" );
@@ -348,13 +347,13 @@ TEST_F( EventTest, GetSubevent )
 
 
 
-TEST_F( EventTest, MultiEvents )
+TEST_F( TEST_CASE, MultiEvents )
 {
 
   std::vector< components::timing::Event > events( 4 );
 
-  events[ 0 ].setCallback( &EventTest::callback_3, this        );
-  events[ 1 ].setCallback( &EventTest::callback_4, this, false );
+  events[ 0 ].setCallback( &TEST_CASE::callback_3, this        );
+  events[ 1 ].setCallback( &TEST_CASE::callback_4, this, false );
 
   e_.addSubevent( &events[ 0 ], "first"  );
   e_.addSubevent( &events[ 1 ], "second" );
@@ -368,7 +367,7 @@ TEST_F( EventTest, MultiEvents )
 
 
 
-  events[ 1 ].setCallback( &EventTest::callback_4, this, true );
+  events[ 1 ].setCallback( &TEST_CASE::callback_4, this, true );
 
   previousCounter = counter_;
 
@@ -378,8 +377,8 @@ TEST_F( EventTest, MultiEvents )
 
 
   // Add subevents to sub-events
-  events[ 2 ].setCallback( &EventTest::callback_1, this        );
-  events[ 3 ].setCallback( &EventTest::callback_4, this, false );
+  events[ 2 ].setCallback( &TEST_CASE::callback_1, this        );
+  events[ 3 ].setCallback( &TEST_CASE::callback_4, this, false );
 
   events[ 0 ].addSubevent( &events[ 2 ], "third"  );
   events[ 2 ].addSubevent( &events[ 3 ], "fourth" );
@@ -390,7 +389,7 @@ TEST_F( EventTest, MultiEvents )
 
   ASSERT_EQ( previousCounter + 8, counter_ );
 
-  events[ 3 ].setCallback( &EventTest::callback_4, this, true );
+  events[ 3 ].setCallback( &TEST_CASE::callback_4, this, true );
   previousCounter = counter_;
   
   e_.callback();
@@ -400,16 +399,16 @@ TEST_F( EventTest, MultiEvents )
 }
 
 
-TEST_F( EventTest, PrintEvents )
+TEST_F( TEST_CASE, PrintEvents )
 {
 
   singleCallback();
   std::vector< components::timing::Event > events( 4 );
 
-  events[ 0 ].setCallback( &EventTest::callback_3, this        );
-  events[ 1 ].setCallback( &EventTest::callback_4, this, false );
-  events[ 2 ].setCallback( &EventTest::callback_1, this        );
-  events[ 3 ].setCallback( &EventTest::callback_4, this, false );
+  events[ 0 ].setCallback( &TEST_CASE::callback_3, this        );
+  events[ 1 ].setCallback( &TEST_CASE::callback_4, this, false );
+  events[ 2 ].setCallback( &TEST_CASE::callback_1, this        );
+  events[ 3 ].setCallback( &TEST_CASE::callback_4, this, false );
 
   e_.addSubevent( &events[ 0 ], "first"  );
   e_.addSubevent( &events[ 1 ], "second" );
@@ -421,7 +420,7 @@ TEST_F( EventTest, PrintEvents )
 }
 
 
-TEST_F( EventTest, OrderedEvents )
+TEST_F( TEST_CASE, OrderedEvents )
 {
 
   unsigned int testArray[ 5 ];
@@ -438,11 +437,11 @@ TEST_F( EventTest, OrderedEvents )
 
   std::vector< components::timing::Event > events( 5 );
 
-  events[ 0 ].setCallback( &EventTest::callback_x, this, testArray, 0, 1 );
-  events[ 1 ].setCallback( &EventTest::callback_x, this, testArray, 1, 2 );
-  events[ 2 ].setCallback( &EventTest::callback_x, this, testArray, 2, 3 );
-  events[ 3 ].setCallback( &EventTest::callback_x, this, testArray, 3, 4 );
-  events[ 4 ].setCallback( &EventTest::callback_x, this, testArray, 4, 0 );
+  events[ 0 ].setCallback( &TEST_CASE::callback_x, this, testArray, 0, 1 );
+  events[ 1 ].setCallback( &TEST_CASE::callback_x, this, testArray, 1, 2 );
+  events[ 2 ].setCallback( &TEST_CASE::callback_x, this, testArray, 2, 3 );
+  events[ 3 ].setCallback( &TEST_CASE::callback_x, this, testArray, 3, 4 );
+  events[ 4 ].setCallback( &TEST_CASE::callback_x, this, testArray, 4, 0 );
 
 
   for(  

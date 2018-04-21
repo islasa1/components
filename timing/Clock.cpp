@@ -28,6 +28,8 @@
 #include <exception>
 #include <chrono>
 
+#include "string/Logging.hpp"
+
 
 namespace components
 {
@@ -43,8 +45,9 @@ namespace timing
 ///
 ///**********************************************************************************
 Clock::Clock( )
-  : delay_( 1 )
-  , done_ ( false )
+  : delay_ ( 100   )
+  , done_  ( false )
+  , paused_( false )
 {} // Clock::Clock
 
 
@@ -57,11 +60,22 @@ Clock::Clock( )
 ///**********************************************************************************
 Clock::~Clock( )
 {
-  done_ = true;
 
-  if ( tTimer_.joinable() )
+  if ( active() || paused_ )
   {
-    tTimer_.join();
+    // Stop loop
+    done_ = true;
+
+    // unpause regardless
+    mPause_.unlock();
+
+    if ( tTimer_.joinable() )
+    {
+
+      tTimer_.join( );
+
+    }
+
   }
 
 } // Clock::~Clock
@@ -86,12 +100,21 @@ bool Clock::start( )
     tTimer_ = std::thread( &Clock::update, this );
 
   }
-  else
+  else if ( paused_ )
   {
     //
     // We were paused
     //
     mPause_.unlock();
+    paused_ = false;
+
+  }
+  else
+  {
+
+    LOG_WARNING( "Attempting to restart a running clock, ignored" );
+    return false;
+
   }
 
   return true;
@@ -113,10 +136,13 @@ bool Clock::start( )
 bool Clock::stop( )
 {
   
-  if ( tTimer_.joinable( ) )
+  if ( active() || paused_ )
   {
     // Stop loop
     done_ = true;
+
+    // unpause regardless
+    mPause_.unlock();
 
     try 
     {
@@ -125,6 +151,7 @@ bool Clock::stop( )
     catch( ... )
     {
       //\todo AI: Add some logging info and try to diagnose
+      LOG_ERROR( "Clock could not stop" );
       return false;
     }
 
@@ -132,6 +159,7 @@ bool Clock::stop( )
   else
   {
     //\todo AI: Add some logging info here
+    LOG_WARNING( "Clock is not joinable" );
     return false;
   }
 
@@ -152,16 +180,27 @@ bool Clock::stop( )
 ///**********************************************************************************
 bool Clock::pause( )
 {
-  try
+  if ( active() )
   {
-    mPause_.lock( );
-  } 
-  catch( ... )
+
+    try
+    {
+      mPause_.lock( );
+      paused_ = true;
+    } 
+    catch( ... )
+    {
+      LOG_ERROR( "Clock could not be paused" );
+      return false;
+    }
+
+  }
+  else
   {
-    //
-    //
-    //
+
+    LOG_WARNING( "Attempting to pause an inactive clock, ignored" );
     return false;
+
   }
 
   return true;
@@ -172,7 +211,7 @@ bool Clock::pause( )
 
 ///**********************************************************************************
 ///
-///  \function Clock::registerResource
+///  \function Clock::registerEvent
 ///
 ///  \brief    Register a resource to this particular clock
 ///  
@@ -183,10 +222,10 @@ bool Clock::pause( )
 ///  \return none
 ///
 ///**********************************************************************************
-void Clock::registerResource( 
-                              std::pair< Event, unsigned int > e, 
-                              int order 
-                              )
+void Clock::registerEvent( 
+                          std::pair< Event, unsigned int > e, 
+                          int order 
+                          )
 {
 
   // Attempt to lock the clock and safely add
@@ -212,7 +251,7 @@ void Clock::registerResource(
 
   mPause_.unlock();
 
-} // Clock::registerResource
+} // Clock::registerEvent
 
 
 ///**********************************************************************************
@@ -234,7 +273,6 @@ void Clock::update( )
   {
 
     // Time stamp
-
     mPause_.lock();
 
     for ( itEvent_ = events_.begin();
@@ -246,16 +284,15 @@ void Clock::update( )
 
     }
     
+    // Unlock BEFORE sleep so others have a chance to interact with clock
+    mPause_.unlock();    
+
     // Do delta time and diff with delay_
     std::this_thread::sleep_for( std::chrono::milliseconds( delay_ ) );
-
-    mPause_.unlock();
 
   }
 
 } // Clock::update
-
-
 
 
 } // namespace timing

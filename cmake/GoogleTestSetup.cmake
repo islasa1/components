@@ -249,7 +249,19 @@ endfunction( auto_test_name )
 ####################################################################################
 function( auto_test_case test_files test_suffix test_macro test_name )
 
+  foreach( TEST_FILE ${test_files} )
 
+    get_filename_component( SIMPLE_NAME ${TEST_FILE} NAME )
+
+    string( REPLACE "${test_suffix}.cpp" "" TEST_CASE ${SIMPLE_NAME} )
+
+    set_source_files_properties( 
+                                ${TEST_FILE}
+                                PROPERTIES
+                                  COMPILE_DEFINITIONS 
+                                  ${test_macro}=${test_name}${TEST_CASE}${test_suffix} )
+
+  endforeach()  
 
 endfunction( auto_test_case )
 

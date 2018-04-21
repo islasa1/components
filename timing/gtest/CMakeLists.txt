@@ -32,6 +32,7 @@ set (   TEST_SOURCES
       ${TEST_SOURCES}  
       # Put test sources here
       ${CMAKE_CURRENT_SOURCE_DIR}/EventTest.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/ClockTest.cpp
 
         PARENT_SCOPE 
     )
@@ -39,7 +40,7 @@ set (   TEST_SOURCES
 set (   TEST_INCLUDES 
       ${TEST_INCLUDES} 
       # Put any specific includes here
-      ${CMAKE_CURRENT_SOURCE_DIR}/.. 
+      ${PROJECT_SOURCE_DIR}
 
         PARENT_SCOPE 
     )

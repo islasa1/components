@@ -24,7 +24,7 @@
 
 #include "gtest/gtest.h"
 
-#include "Parser.hpp"
+#include "string/Parser.hpp"
 #include "config.hpp"
 
 namespace gtest

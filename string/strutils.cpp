@@ -27,6 +27,9 @@
 namespace components
 {
 
+namespace string
+{
+
 //**********************************************************************************
 //
 //  Core split function, tokenizing string into parts based on a delimeter 
@@ -197,5 +200,8 @@ bool isWhiteSpace( std::string s )
 {
   return ( s.find_first_not_of( " \t\n\r" ) == std::string::npos );
 }
+
+
+} // namespace string
 
 } // namespace components

@@ -69,23 +69,24 @@ namespace timing
   
 class Clock
 {
+
 public:
   Clock();
   ~Clock();
   
   //
-  // Can be synchronized with other Clocks
+  // Basic Functionality
   //
   bool start( );
-  bool stop( );
+  bool stop ( );
   bool pause( );
 
-  void registerResource( std::pair< Event, unsigned int > e, int order = -1 );
+  bool active()  { return tTimer_.joinable( ) && !done_ && !paused_; }
+  bool stopped() { return done_;   }
+  bool paused () { return paused_; }
 
-  //
-  // Synchronize starts, stops & pauses
-  //
 
+  void registerEvent( std::pair< Event, unsigned int > e, int order = -1 );
 
 private:
 
@@ -94,6 +95,7 @@ private:
   unsigned int delay_;
 
   bool         done_;
+  bool         paused_;
 
   std::thread  tTimer_;
   std::mutex   mPause_;

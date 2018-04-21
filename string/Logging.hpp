@@ -9,26 +9,31 @@
 //                                                                                  //
 //                                                                                  //
 //////////////////////////////////////////////////////////////////////////////////////
-//
-//
-//  File    : strutils.hpp
-//  Author  : Anthony Islas
-//  Purpose : A set of string utilities not essential or specific to implementation
-//  Group   : Components
-//
-//  TODO    : None
-//
-//  License : None
-//
+///
+///
+///  \File    : Logging.hpp
+///  \Author  : Anthony Islas
+///  \Purpose : Generic way of logging
+///  \Group   : String
+///
+///  \todo    : None
+///
+///  \License : GNU GPL v3
+///
 ////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef __STRUTILS_H__
-#define __STRUTILS_H__
+#include <iostream>
 
-#include <string>
-#include <cstring>
-#include <sstream>
-#include <vector>
+#if DEBUG
+
+#define LOG_DEBUG( ... ) if ( 1 ) std::cout << "DEBUG: "  << __VA_ARGS__ << std::endl;
+
+#else
+
+#define LOG_DEBUG( ... ) 
+
+#endif
+
 
 namespace components
 {
@@ -36,23 +41,9 @@ namespace components
 namespace string
 {
 
-
-void split( char delim,
-            const std::string &s,  
-            std::vector< std::string > &vElems, 
-            bool bRemoveDelim = true );
-void split( char delim, std::vector< std::string>& rElems );
-
-std::vector< std::string > split( char delim,
-                                  const std::string &s );
-std::vector< std::string > split( char pDelims[],
-                                  const std::string &s );
-bool isWhiteSpace( std::string s );
-
-
+#define LOG_WARNING( ... ) std::cout << "WARNING: " << __VA_ARGS__ << std::endl;
+#define LOG_ERROR( ... )   std::cerr << "ERROR  : " << __PRETTY_FUNCTION__ << ":" << __LINE__ << " : " << __VA_ARGS__ << std::endl;
 
 } // namespace string
 
 } // namespace components
-
-#endif

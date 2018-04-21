@@ -45,6 +45,8 @@ message ( "Target Name: " ${GTEST_ARGS_TARGET} )
 ####################################################################################
 add_executable ( ${GTEST_ARGS_TARGET}  ${GTEST_ARGS_SOURCES} )
 
+auto_test_case( "${GTEST_ARGS_SOURCES}" "Test" "TEST_CASE" ${GTEST_ARGS_TARGET} )
+
 #
 # Depends on thirdparty target ( added by setup module )
 #
