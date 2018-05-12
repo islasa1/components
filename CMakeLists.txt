@@ -75,6 +75,17 @@ detailed_print( "PROJECT VERSION" CLR_MAGENTA ${PROJECT_VERSION} CLR_CYAN 14 LEF
 #
 set( CMAKE_CXX_FLAGS "-std=c++11 -Wall" )
 
+#
+# Debug flags
+#
+if ( ${CMAKE_BUILD_TYPE} MATCHES debug )
+
+  message( STATUS "${CLR_BOLDGREEN}Setting debug flags${CLR_RESET}" )
+
+  add_definitions( -DDEBUG )
+
+endif()
+
 
 include_directories ( ${PROJECT_BINARY_DIR} )
 

@@ -27,6 +27,8 @@
 #include <exception>
 #include <algorithm>
 
+#include "string/Logging.hpp"
+
 
 namespace components
 {
@@ -129,7 +131,7 @@ Event::addSubevent(
   if ( tagToSubevent_.find( tag ) != tagToSubevent_.end() )
   {
 
-    std::cerr << "Tag " << tag << " already exists" << std::endl; 
+    LOG_WARNING( "Tag " << tag << " already exists" ); 
 
     return false;
 
@@ -228,7 +230,7 @@ Event::getSubevent(
   if ( tagToSubevent_.find( tag ) == tagToSubevent_.end() )
   {
 
-    std::cerr << "No event exists with tag " << tag << std::endl;
+    LOG_WARNING( "No event exists with tag " << tag );
 
     return nullptr;
 

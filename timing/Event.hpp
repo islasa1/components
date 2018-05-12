@@ -56,6 +56,8 @@ public:
   bool   removeSubevent( std::string tag );
   Event* getSubevent   ( std::string tag );
 
+  std::string tag() { return tag_; }
+
   static
   void 
   print( const Event& e, std::string indent = "" );

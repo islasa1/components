@@ -16,32 +16,12 @@
 //  Purpose : Generic Clock class creates a single event ( tick ) when registered 
 //            resources are ready to update, can be placed in a certain order
 //            to control pipeline / dataflow for resources tied to a similar clock
-//            Supports up to a 1000Hz clock with one resources to manage ( ordering 
-//            resources can cause delays )
-//
-//            Clocks may be synchronized with other Clocks' start, stop, and pause functions
-//            while also having independent control, with *Unique() functions. Only when 
-//            the group is running will individual control work, otherwise group control 
-//            has precedence. Unique Pause must be undone by unqiue start
-//            The table below demonstrates the functionality of the Clock when synced
-//            
-//            ___________________________________________  STATES : Upper is Group, Lower is THIS
-//            |   |             |STATE Group -> This    |    R = Running
-//            |   |             |_______________________|    X = Stopped
-//            |   |             | Sync Group            |    P = Paused
-//            |   |  CALLS      |  Run  |  Stop | Pause |    t = Depends on THIS state
-//            |___|_____________|_______|_______|_______|___ - = No change in state 
-//            |   |             |       |       |       | S
-//            | T | Start       |   t   |   R   |   R   | Y
-//            | H | Stop        |   X   |   -   |   X   | N
-//            | I | Pause       |   P   |   X   |   -   | C
-//            | S |             |       |       |       |__
-//            |   | StartUnique |  Rr   |  Xx   |  Pr   | T
-//            |   | StopUnique  |  Rx   |  Xx   |  Px   | H
-//            |   | PauseUnique |  Rp   |  Xx   |  Pp   | I
-//            |   |             |       |       |       | S
-//            |___|_____________|_______|_______|_______|__ 
-//            Note : When not synced all functions do the unique functions
+//           
+//            Supports up to a 100Hz clock with one resources to manage ( ordering 
+//            resources can cause delays ). Clock can go beyond that, but becomes 
+//            unreliable and will not reflect expected frequency. Max seen frequency
+//            seen is around 2125 Hz, but with current implementation it is somewhere
+//            between 650 and 850, scaling more to the lower end
 //
 //  Group   : Timing
 //
@@ -71,8 +51,16 @@ class Clock
 {
 
 public:
+
+  typedef std::pair< Event&, uint > PeriodicEvent;
+
   Clock();
   ~Clock();
+
+  // optimizing removes the ability to get a measured
+  // frequency
+  void optimized( bool enable ) { optimized_ = enable; }
+  bool optimized(             ) { return optimized_;   }
   
   //
   // Basic Functionality
@@ -81,27 +69,53 @@ public:
   bool stop ( );
   bool pause( );
 
+  //
+  // Statistics
+  //
+  float measuredFrequency() { return frequency_; } // This requires the clock to run
+  float expectedFrequency() { return ( 1000.0 / static_cast< double >( delay_ ) );  }
+
+  //  
+  // Status
+  //
   bool active()  { return tTimer_.joinable( ) && !done_ && !paused_; }
   bool stopped() { return done_;   }
   bool paused () { return paused_; }
 
-
-  void registerEvent( std::pair< Event, unsigned int > e, int order = -1 );
+  //
+  // Event interaction
+  //
+  void registerEvent( std::pair< Event&, uint > e, int order = -1 );
+  void changeEventRate( std::string tag, uint milli );
 
 private:
 
   void update( );
+  void setPeriods( );
 
-  unsigned int delay_;
+  uint         delay_;
+  float        frequency_;
 
   bool         done_;
   bool         paused_;
+  bool         optimized_;
 
   std::thread  tTimer_;
   std::mutex   mPause_;
 
-  std::list< std::pair< Event, unsigned int > >::iterator itEvent_;
-  std::list< std::pair< Event, unsigned int > >           events_;
+  // pair of pair of <Event and rate ( milli )> and 
+  //         pair of <number of periods, number of elapsed periods>
+  std::list< std::pair< 
+                        std::pair< Event&, uint >, 
+                        std::pair< uint,   uint > 
+                        >
+              >::iterator itEvent_;
+
+  std::list< std::pair< 
+                        std::pair< Event&, uint >, 
+                        std::pair< uint,   uint > 
+                        >           
+              > events_;
 
 
 };

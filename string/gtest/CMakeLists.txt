@@ -36,7 +36,6 @@ set (   TEST_SOURCES
         PARENT_SCOPE 
       )
 
-message( "++++++++++ ${PROJECT_SOURCE_DIR}" )
 set (   TEST_INCLUDES 
       ${TEST_INCLUDES} 
       # Put any specific includes here

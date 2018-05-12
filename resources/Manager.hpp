@@ -60,7 +60,7 @@ protected:
 //
 //**********************************************************************************
 template< typename Item, typename Tag >
-Manager::Manager( )
+anager::Manager( )
 {
   items_.clear( );
 }
@@ -75,7 +75,7 @@ Manager::Manager( )
 //
 //**********************************************************************************
 template< typename Item, typename Tag >
-Manager::~Manager( )
+anager::~Manager( )
 {
 
   items_.clear( );
@@ -97,7 +97,7 @@ Manager::~Manager( )
 //
 //**********************************************************************************
 template< typename Item, typename Tag >
-Manager::addItem( Item item, Tag tag )
+anager::addItem( Item item, Tag tag )
 {
 
 }
@@ -117,7 +117,7 @@ Manager::addItem( Item item, Tag tag )
 //
 //**********************************************************************************
 template< typename Item, typename Tag >
-Manager::getItem( Tag tag )
+anager::getItem( Tag tag )
 {
 
 }
