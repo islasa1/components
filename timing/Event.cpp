@@ -43,10 +43,10 @@ namespace timing
 ///  \brief    ctor
 ///
 ///********************************************************************************** 
-Event::Event( )
+Event::Event( std::string tag )
 : callback_ ( nullptr )
 , enabled_  (  true   )
-, tag_      ( "Event" )
+, tag_      (   tag   )
 , subevents_(    0    )
 , tagToSubevent_( )
 { } // Event::Event
@@ -125,6 +125,13 @@ Event::addSubevent(
   {
 
     return false;
+
+  }
+  if ( e->tag_ != "Event" )
+  {
+
+    LOG_WARNING( "Event already has a non-default tag, will not overwrite" );
+    tag = e->tag_;
 
   }
  

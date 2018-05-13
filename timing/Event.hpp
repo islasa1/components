@@ -39,8 +39,8 @@ namespace timing
 class Event
 {
 public:
-  Event();
 
+  Event( std::string tag = "Event" );
   ~Event();
 
   template< typename F, typename ... Args >

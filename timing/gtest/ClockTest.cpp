@@ -46,6 +46,8 @@ TEST( TEST_CASE, CreateClock )
 
 }
 
+
+
 TEST( TEST_CASE, StartClock )
 {
 
@@ -58,6 +60,7 @@ TEST( TEST_CASE, StartClock )
   ASSERT_TRUE( clk.active() );
 
 }
+
 
 
 TEST( TEST_CASE, RestartClock )
@@ -76,6 +79,7 @@ TEST( TEST_CASE, RestartClock )
   ASSERT_TRUE( clk.active() );
 
 }
+
 
 
 TEST( TEST_CASE, StopRunningClock )
@@ -97,6 +101,7 @@ TEST( TEST_CASE, StopRunningClock )
 }
 
 
+
 TEST( TEST_CASE, StopInvalidClock )
 {
 
@@ -110,6 +115,7 @@ TEST( TEST_CASE, StopInvalidClock )
   ASSERT_FALSE( clk.stopped() );
 
 }
+
 
 
 TEST( TEST_CASE, PauseClock )
@@ -133,6 +139,7 @@ TEST( TEST_CASE, PauseClock )
 }
 
 
+
 TEST( TEST_CASE, PauseInvalidClock )
 {
 
@@ -148,7 +155,6 @@ TEST( TEST_CASE, PauseInvalidClock )
   ASSERT_FALSE ( clk.paused() );
 
 }
-
 
 
 
@@ -176,6 +182,7 @@ TEST( TEST_CASE, StopPausedClock )
   ASSERT_TRUE ( clk.stopped() );
 
 }
+
 
 
 TEST( TEST_CASE, EventRateUpdateNoEvents )
@@ -252,6 +259,13 @@ void eventCallback( int *x )
   if ( x ) ( *x )++;
 }
 
+void eventCallback0( int *y )
+{
+  if ( y ) ( *y )++;
+}
+
+
+
 TEST( TEST_CASE, AddSingleEvent5Hz )
 {
 
@@ -284,20 +298,17 @@ TEST( TEST_CASE, AddSingleEvent5Hz )
   // Pause
   ASSERT_TRUE( clk.pause() );
 
-  // Let it finish
-  sleep( 2 );
-
   ASSERT_FALSE( clk.active() );
   ASSERT_TRUE ( clk.paused() );
 
   // Get measured frequency
   std::cout << "Measured frequency : " << clk.measuredFrequency() << std::endl;
 
-  // We can be off by about 0.05 Hz for > 100 Hz frequencies
+  // We can be off by about 0.05 Hz for < 100 Hz frequencies
   ASSERT_NEAR( clk.measuredFrequency(), clk.expectedFrequency(), 0.05 );
 
 
-  std::cout << "Difference between actual and expected at 5 Hz for 2 sec: "
+  std::cout << "Difference between actual and expected for 2 sec: "
             << clk.expectedFrequency() - clk.measuredFrequency() << " Hz" 
             << std::endl;
 
@@ -308,6 +319,7 @@ TEST( TEST_CASE, AddSingleEvent5Hz )
   ASSERT_TRUE ( clk.stopped() );
 
 }
+
 
 
 TEST( TEST_CASE, AddSingleEventMaxClock )
@@ -349,9 +361,9 @@ TEST( TEST_CASE, AddSingleEventMaxClock )
   std::cout << "Measured frequency : " << clk.measuredFrequency() << std::endl;
 
   // We can be off by about ~5 Hz at max clock frequency 
-  ASSERT_NEAR( clk.measuredFrequency(), clk.expectedFrequency(), 5.5 );
+  ASSERT_NEAR( clk.measuredFrequency(), clk.expectedFrequency(), 2.5 );
 
-  std::cout << "Difference between actual and expected at max Hz for 2 sec: "
+  std::cout << "Difference between actual and expected for 2 sec: "
             << clk.expectedFrequency() - clk.measuredFrequency() << " Hz" 
             << std::endl;
 
@@ -362,6 +374,8 @@ TEST( TEST_CASE, AddSingleEventMaxClock )
   ASSERT_TRUE ( clk.stopped() );
   
 }
+
+
 
 TEST( TEST_CASE, AddSingleEventOutputTrueMax )
 {
@@ -415,17 +429,308 @@ TEST( TEST_CASE, AddSingleEventOutputTrueMax )
 
 }
 
+
+
+TEST( TEST_CASE, AddSingleEvent60HzChangeCallback )
+{
+
+  components::timing::Clock clk;
+  components::timing::Event e;
+  int x( 0 );
+  int y( 0 );
+
+  ASSERT_FALSE( clk.active() );
+
+  e.setCallback( eventCallback, &x );
+  e.callback();
+
+  ASSERT_EQ( 1, x );
+
+  // Event, rate, order
+  clk.registerEvent( std::make_pair( std::ref( e ), 16u ) );
+
+  std::cout << "Expected frequency : " << clk.expectedFrequency() << std::endl;
+
+  // Start clock
+  ASSERT_TRUE( clk.start() );
+  ASSERT_TRUE( clk.active() );
+
+  sleep( 2 );
+
+  // Pause
+  ASSERT_TRUE( clk.pause() );
+
+  ASSERT_FALSE( clk.active() );
+  ASSERT_TRUE ( clk.paused() );
+
+  // Get measured frequency
+  std::cout << "Measured frequency : " << clk.measuredFrequency() << std::endl;
+
+  // We can be off by about 0.5 Hz for 0 Hz < X < 80 Hz frequencies
+  ASSERT_NEAR( clk.measuredFrequency(), clk.expectedFrequency(), 0.5 );
+
+
+  std::cout << "Difference between actual and expected for 2 sec: "
+            << clk.expectedFrequency() - clk.measuredFrequency() << " Hz" 
+            << std::endl;
+
+  // Check values
+  ASSERT_NEAR( x, 126, 2 );
+  int tempX( x ); // hold x value
+
+
+  e.setCallback( eventCallback0, &y );
+  e.callback();
+
+  ASSERT_EQ( y, 1 );
+
+  // Re-do
+  ASSERT_TRUE( clk.start() );
+  ASSERT_TRUE( clk.active() );
+
+  sleep( 2 );
+
+  // Pause
+  ASSERT_TRUE( clk.pause() );
+
+  ASSERT_FALSE( clk.active() );
+  ASSERT_TRUE ( clk.paused() );
+
+  ASSERT_NEAR( clk.measuredFrequency(), clk.expectedFrequency(), 0.5 );
+
+  ASSERT_NEAR( y, 126, 2 );
+
+  // Make sure X did not change
+  ASSERT_EQ( tempX, x );
+  int tempY( y );
+
+  // Re-do but change while clock is running
+  ASSERT_TRUE( clk.start() );
+  ASSERT_TRUE( clk.active() );
+
+  sleep( 1 );
+  e.setCallback( eventCallback, &x );
+  sleep( 1 );
+
+  // Pause
+  ASSERT_TRUE( clk.pause() );
+
+  ASSERT_FALSE( clk.active() );
+  ASSERT_TRUE ( clk.paused() );
+
+  ASSERT_NEAR( clk.measuredFrequency(), clk.expectedFrequency(), 0.5 );
+
+  // Check values
+  ASSERT_NE( y, tempY );
+  ASSERT_NE( x, tempX );
+
+  ASSERT_NEAR( y, 188, 3 );
+  ASSERT_NEAR( x, 188, 3 );
+
+
+  // Stop
+  ASSERT_TRUE( clk.stop() );
+
+  ASSERT_FALSE( clk.active() );
+  ASSERT_TRUE ( clk.stopped() );
+
+}
+
+
+
 // Test cases I still need - 
-// More than one event
-// sub events under one event
-// events with different frequencies
 // subevents under events with different periods
 // multiple events assigning order
 // multiple events, rearrange order 
 // multiple events with different periods, assigned order
 // multiple events with different periods, rearrange order 
 
-// TEST( TEST_CASE, )
+TEST( TEST_CASE, MultiEventSubEvent )
+{
 
+  components::timing::Clock clk;
+  components::timing::Event e;
+  components::timing::Event sub;
+  int x( 0 );
+  int y( 0 );
+
+  ASSERT_FALSE( clk.active() );
+
+  e.setCallback( eventCallback, &x );
+  e.callback();
+
+  sub.setCallback( eventCallback0, &y );
+  sub.callback();
+
+  ASSERT_EQ( 1, x );
+  ASSERT_EQ( 1, y );
+
+  // Event, rate, order
+  clk.registerEvent( std::make_pair( std::ref( e ), 200u ) );
+
+  e.addSubevent( &sub, "sub" );
+
+  std::cout << "Expected frequency : " << clk.expectedFrequency() << std::endl;
+
+  // Start clock
+  ASSERT_TRUE( clk.start() );
+
+  ASSERT_TRUE( clk.active() );
+
+  sleep( 2 );
+
+  // Pause
+  ASSERT_TRUE( clk.pause() );
+  ASSERT_FALSE( clk.active() );
+  ASSERT_TRUE ( clk.paused() );
+
+
+  // We can be off by about 0.05 Hz for < 100 Hz frequencies
+  ASSERT_NEAR( clk.measuredFrequency(), clk.expectedFrequency(), 0.05 );
+
+  // Check values
+  ASSERT_EQ( x, y );
+  ASSERT_NEAR( x, 10, 1 );
+  ASSERT_NEAR( y, 10, 1 );
+
+
+  // Stop
+  ASSERT_TRUE( clk.stop() );
+
+  ASSERT_FALSE( clk.active() );
+  ASSERT_TRUE ( clk.stopped() );
+
+}
+
+
+
+TEST( TEST_CASE, MultiEventSameFreq30Hz )
+{
+
+  components::timing::Clock clk;
+  components::timing::Event e0( "e0" );
+  components::timing::Event e1( "e1" );
+
+  int x( 0  );
+  int y( 10 );
+
+  ASSERT_FALSE( clk.active() );
+
+  // Create event
+  e0.setCallback( eventCallback, &x );
+  e0.callback();
+  ASSERT_EQ( 1, x );
+
+  e1.setCallback( eventCallback0, &y );
+  e1.callback();
+  ASSERT_EQ( 11, y );
+
+  std::cout << "X : " << x << " || Y : " << y << std::endl;
+
+  // Event, rate, order
+  clk.registerEvent( components::timing::Clock::PeriodicEvent( e0 , 33u ) ); 
+  clk.registerEvent( components::timing::Clock::PeriodicEvent( e1 , 33u ) ); 
+
+  std::cout << "Expected frequency : " << clk.expectedFrequency() << std::endl;
+
+  // Start clock
+  ASSERT_TRUE( clk.start() );
+
+  ASSERT_TRUE( clk.active() );
+
+  std::this_thread::sleep_for( std::chrono::milliseconds( 2000 ) );
+
+  // Pause
+  ASSERT_TRUE( clk.pause() );
+
+  ASSERT_FALSE( clk.active() );
+  ASSERT_TRUE ( clk.paused() );
+
+  // Get measured frequency
+  std::cout << "Measured frequency : " << clk.measuredFrequency() << std::endl;
+
+  ASSERT_NEAR( clk.measuredFrequency(), clk.expectedFrequency(), 0.5 );
+
+  std::cout << "Difference between actual and expected at max Hz for 2 sec: "
+            << clk.expectedFrequency() - clk.measuredFrequency() << " Hz" 
+            << std::endl;
+
+  // Stop
+  ASSERT_TRUE( clk.stop() );
+
+  ASSERT_FALSE( clk.active() );
+  ASSERT_TRUE ( clk.stopped() );
+
+  // Check values
+  ASSERT_EQ( x + 10, y );
+  ASSERT_NEAR( x, 61, 2 );
+  ASSERT_NEAR( y, 71, 2 );
+
+  std::cout << "X : " << x << " || Y : " << y << " updated +1 @ 30Hz for 2sec" << std::endl;
+
+}
+
+
+
+TEST( TEST_CASE, MultiEventDifferentFreq )
+{
+
+  components::timing::Clock clk;
+  components::timing::Event e0( "e0" );
+  components::timing::Event e1( "e1" );
+
+  int x( 0  );
+  int y( 0 );
+
+  ASSERT_FALSE( clk.active() );
+
+  // Create event
+  e0.setCallback( eventCallback, &x );
+  e0.callback();
+  ASSERT_EQ( 1, x );
+
+  e1.setCallback( eventCallback0, &y );
+  e1.callback();
+  ASSERT_EQ( 1, y );
+
+  std::cout << "X : " << x << " || Y : " << y << std::endl;
+
+  // Event, rate, order - one at 40 Hz and one at 20 Hz
+  clk.registerEvent( components::timing::Clock::PeriodicEvent( e0 , 25u ) ); 
+  clk.registerEvent( components::timing::Clock::PeriodicEvent( e1 , 50u ) ); 
+
+  ASSERT_FLOAT_EQ( clk.expectedFrequency(), 1000.0 / 25.0 );
+
+  // Start clock
+  ASSERT_TRUE( clk.start() );
+  ASSERT_TRUE( clk.active() );
+
+  std::this_thread::sleep_for( std::chrono::milliseconds( 2000 ) );
+
+  // Pause
+  ASSERT_TRUE( clk.pause() );
+
+  ASSERT_FALSE( clk.active() );
+  ASSERT_TRUE ( clk.paused() );
+
+  ASSERT_NEAR( clk.measuredFrequency(), clk.expectedFrequency(), 0.5 );
+
+
+  // Stop
+  ASSERT_TRUE( clk.stop() );
+
+  ASSERT_FALSE( clk.active() );
+  ASSERT_TRUE ( clk.stopped() );
+
+  // Check values
+  // No matter what, since it is a 2t relation, we can only be off by one
+  // is stopped in the middle of the updates
+  ASSERT_EQ( ( x - 1 ) / 2, y - 1 );
+  ASSERT_NEAR( x, 81, 2 );
+  ASSERT_NEAR( y, 41, 2 );
+
+  std::cout << "X : " << x << " || Y : " << y << " updated +1 @ 30Hz for 2sec" << std::endl;
+
+}
 
 } // namespace gtest

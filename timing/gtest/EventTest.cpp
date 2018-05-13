@@ -278,6 +278,49 @@ TEST_F( TEST_CASE, AddSubevent )
 }
 
 
+TEST_F( TEST_CASE, AddSubeventNamed )
+{
+
+  singleCallback();
+
+  doubleCallback();
+
+  components::timing::Event *sub( new components::timing::Event( "AddSubeventNamed" ) );
+  sub->setCallback( &TEST_CASE::callback_1, this );
+
+  unsigned int previousCounter = counter_;
+
+  ASSERT_EQ( previousCounter, counter_ );
+
+  sub->callback();
+
+  ASSERT_EQ( previousCounter + 1, counter_ );
+
+
+
+
+  ASSERT_TRUE( e_.addSubevent( sub, "single" ) );
+
+  ASSERT_EQ( sub->tag(), std::string( "AddSubeventNamed" ) );
+
+  previousCounter = counter_;
+
+  ASSERT_EQ( previousCounter, counter_ );
+
+  e_.callback( );
+
+  ASSERT_NE( previousCounter, counter_ );
+
+
+  // Calls single and double
+  ASSERT_EQ( previousCounter + 3, counter_ );
+
+  delete sub;
+
+}
+
+
+
 TEST_F( TEST_CASE, RemoveSubevent )
 {
 

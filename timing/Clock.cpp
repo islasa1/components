@@ -373,12 +373,11 @@ void Clock::update( )
           itEvent_++ )
     {
 
-      // If periods elapsed is greater than periodic interval
-      if ( itEvent_->second.second > itEvent_->second.first )
+      // If periods elapsed is greater than or equal to periodic interval
+      if ( itEvent_->second.second >= itEvent_->second.first )
       {
-
         itEvent_->first.first.callback();
-        itEvent_->second.second = 0;
+        itEvent_->second.second = 1; // We techinically passed one period
         
       }
       else
