@@ -55,13 +55,13 @@ set( GOOGLETESTSETUP_CMAKE 1 )
 if ( THIRDPARTY )
 
   set ( GTEST_ROOT     
-        ${THIRDPARTY}/googletest/googletest 
+        ${THIRDPARTY}/googletest
       )
   set ( GTEST_LIB      
-        ${THIRDPARTY}/lib/libgtest.a 
+        ${GTEST_ROOT}/lib/libgtest.a 
       )
   set ( GTEST_LIB_MAIN 
-        ${THIRDPARTY}/lib/libgtest_main.a
+        ${GTEST_ROOT}/lib/libgtest_main.a
       )
 
 else()
@@ -112,18 +112,20 @@ if ( UNIT_TEST )
                       ${DISABLE_DOWNLOAD}
                       ${DISABLE_BUILD}
                       # Dowload step
-                      DOWNLOAD_DIR        ${THIRDPARTY}/
+                      DOWNLOAD_DIR        ${GTEST_ROOT}
                       GIT_REPOSITORY      https://github.com/google/googletest
                       GIT_TAG master
                       # Configure step
-                      SOURCE_DIR          ${THIRDPARTY}/googletest
-                      BINARY_DIR          ${THIRDPARTY}/_build/
+                      SOURCE_DIR          ${GTEST_ROOT}
+                      BINARY_DIR          ${THIRDPARTY}/_build
                       # Install step
-                      INSTALL_COMMAND     cp ${THIRDPARTY}/_build/googletest/libgtest.a      ${GTEST_INSTALL_DIR}
-                      COMMAND             cp ${THIRDPARTY}/_build/googletest/libgtest_main.a ${GTEST_INSTALL_DIR}
+                      # INSTALL_COMMAND     cp ${THIRDPARTY}/_build/googletest/libgtest.a      ${GTEST_INSTALL_DIR}
+                      # COMMAND             cp ${THIRDPARTY}/_build/googletest/libgtest_main.a ${GTEST_INSTALL_DIR}
                       CMAKE_ARGS          -DBUILD_GMOCK:BOOL=OFF
                                           -DINSTALL_GMOCK:BOOL=OFF
                                           -DBUILD_GTEST:BOOL=ON
+                                          -DINSTALL_GTEST:BOOL=ON
+                                          -DCMAKE_INSTALL_PREFIX:STRING=${GTEST_ROOT}
                       )
 
 endif()
