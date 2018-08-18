@@ -95,12 +95,18 @@ if ( UNIT_TEST )
   
   # Include if we haven't already
   include( ExternalProject )
-  set    ( GTEST_INSTALL_DIR ${THIRDPARTY}/lib/ )
+  message( STATUS "Setting up googletest..." )
+
 
   if ( NOT BUILD_THIRDPARTY )
 
     set( DISABLE_BUILD    BUILD_COMMAND    ${CMAKE_COMMAND} -E echo_append )
     set( DISABLE_DOWNLOAD DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E echo_append )
+
+  else()
+
+    # CMake is hella dumb
+    set( DISABLE_DOWNLOAD PATCH_COMMAND    bash -c "mkdir -p ${GTEST_ROOT}/_build"  )
 
   endif() 
 
@@ -117,7 +123,7 @@ if ( UNIT_TEST )
                       GIT_TAG master
                       # Configure step
                       SOURCE_DIR          ${GTEST_ROOT}
-                      BINARY_DIR          ${THIRDPARTY}/_build
+                      BINARY_DIR          ${GTEST_ROOT}/_build
                       # Install step
                       # INSTALL_COMMAND     cp ${THIRDPARTY}/_build/googletest/libgtest.a      ${GTEST_INSTALL_DIR}
                       # COMMAND             cp ${THIRDPARTY}/_build/googletest/libgtest_main.a ${GTEST_INSTALL_DIR}
@@ -326,7 +332,6 @@ function( create_gtest
 
     set( VARIABLE ${PREFIX}_${VARIABLE} )
 
-  #   set( ${VARIABLE} ${VARIABLE} PARENT_SCOPE )
     message( STATUS "Set ${VARIABLE} to ${${VARIABLE}}" )
 
   endforeach()

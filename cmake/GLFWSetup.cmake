@@ -59,11 +59,17 @@ if ( GLFW_GRAPHICS )
   
   # Include if we haven't already
   include( ExternalProject )
+  message( STATUS "Setting up glfw3..." )
 
   if ( NOT BUILD_THIRDPARTY )
 
     set( DISABLE_BUILD    BUILD_COMMAND    ${CMAKE_COMMAND} -E echo_append )
     set( DISABLE_DOWNLOAD DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E echo_append )
+
+  else()
+
+    # CMake is hella dumb -> download clears _build, recreate it
+    set( DISABLE_DOWNLOAD PATCH_COMMAND    bash -c "mkdir -p ${GLFW_ROOT}/_build"  )
 
   endif() 
 
@@ -75,12 +81,12 @@ if ( GLFW_GRAPHICS )
                       ${DISABLE_DOWNLOAD}
                       ${DISABLE_BUILD}
                       # Dowload step
-                      DOWNLOAD_DIR        ${GLFW_ROOT}/
+                      DOWNLOAD_DIR        ${GLFW_ROOT}
                       GIT_REPOSITORY      https://github.com/glfw/glfw
                       GIT_TAG master
                       # Configure step
                       SOURCE_DIR          ${GLFW_ROOT}
-                      BINARY_DIR          ${THIRDPARTY}/_build/
+                      BINARY_DIR          ${GLFW_ROOT}/_build
                       # Install step - kinda dont like it being GLFW but ehh
                       # INSTALL_COMMAND     bash -c "mkdir ${GLFW_ROOT}/include/glfw3 -p"
                       # COMMAND             bash -c "cp ${GLFW_ROOT}/include/* ${GLFW_ROOT}/include/glfw3"
@@ -93,10 +99,9 @@ endif()
 
 
 #
-# Now
+# Now -> CMAKE IS REALLY REALLLLY DUMB
+# DO NOT USE FIND_LIBRARY -> THIIS WILL NOT BE RESOLVED AT
+# BUILD TIME< BUT CONFIGURE TIME MEANING IF NOT DOWNLOADED 
+# YET EVERYTHING CRASHES
 # 
-# Not sure how it's supposed to "find" glfw
-# find_package( PkgConfig REQUIRED )
-
-# pkg_search_module( GLFW REQUIRED glfw3 )
-find_library( GLFW_LIBS glfw ${GLFW_ROOT}/lib )
+set( GLFW_LIBS ${GLFW_ROOT}/lib/libglfw.so )

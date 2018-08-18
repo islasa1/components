@@ -80,7 +80,7 @@ target_include_directories ( ${GTEST_ARGS_TARGET}
                               )
 
 if ( GTEST_ARGS_PRINT_INC_DIR )
-
+  
   print_include_dirs ( ${GTEST_ARGS_TARGET} )
 
 endif()
