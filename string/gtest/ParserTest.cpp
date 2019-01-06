@@ -38,7 +38,7 @@ TEST( ComponentsTestsParser, StandardParse )
   std::cout << "Opening file \'" << TEST_RESOURCES
             << "template.gsf\' " << std::endl;
   std::string filename( std::string ( TEST_RESOURCES ) + "template.gsf" );
-  elem = parser.ParseFile( filename );
+  elem = parser.parseFile( filename );
 
   ASSERT_NE( elem.totalElems(), 0 );
 
@@ -56,7 +56,7 @@ TEST( ComponentsTestsParser, ModifiedParse )
   std::cout << "Opening file \'"      << TEST_RESOURCES
             << "fake_template.gsf\' " << std::endl;
   std::string filename( std::string ( TEST_RESOURCES ) + "fake_template.gsf" );
-  elem = parser.ParseFile( filename );
+  elem = parser.parseFile( filename );
 
   ASSERT_NE( elem.totalElems(), 0 );
 

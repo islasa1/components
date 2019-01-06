@@ -78,7 +78,7 @@ Parser::~Parser( ) { };
 //  return A set of parsed elements
 //
 //**********************************************************************************
-ParserElem Parser::ParseFile ( std::string path )
+ParserElem Parser::parseFile ( std::string path )
 {
   ParserElem                 mainElem;
   std::vector< std::string > lines;
@@ -109,7 +109,7 @@ ParserElem Parser::ParseFile ( std::string path )
     std::vector< std::string >::iterator itEnd   = lines.end();
     unsigned int lineIdx = 0;
 
-    ParseLines( itStart, itEnd, lineIdx, mainElem, false);
+    parseLines( itStart, itEnd, lineIdx, mainElem, false);
   }
   else
   {
@@ -135,7 +135,7 @@ ParserElem Parser::ParseFile ( std::string path )
 // return successful parse
 //
 //**********************************************************************************
-bool Parser::ParseLines( std::vector< std::string >::iterator &itStart, 
+bool Parser::parseLines( std::vector< std::string >::iterator &itStart, 
                          std::vector< std::string >::iterator  itEnd,
                          unsigned int                         &lineIdx,
                          ParserElem                           &elem, 
@@ -207,11 +207,11 @@ bool Parser::ParseLines( std::vector< std::string >::iterator &itStart,
         //
         // We have a new child
         //
-        bool            success;
+        bool        success;
         ParserElem  childElem;
         lineIdx++;
 
-        success = ParseLines( itStart, itEnd, lineIdx, childElem, true );
+        success = parseLines( itStart, itEnd, lineIdx, childElem, true );
 
         if ( success )
         {

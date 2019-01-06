@@ -88,7 +88,7 @@ if ( GLFW_GRAPHICS )
                       SOURCE_DIR          ${GLFW_ROOT}
                       BINARY_DIR          ${GLFW_ROOT}/_build
                       # Install step - kinda dont like it being GLFW but ehh
-                      # INSTALL_COMMAND     bash -c "mkdir ${GLFW_ROOT}/include/glfw3 -p"
+                      # INSTALL_COMMAND     bash -c "cp -ar ${GLFW_ROOT}/deps/glad ${GLFW_ROOT}/include"
                       # COMMAND             bash -c "cp ${GLFW_ROOT}/include/* ${GLFW_ROOT}/include/glfw3"
                       CMAKE_ARGS          -DBUILD_SHARED_LIBS:BOOL=ON
                                           -DGLFW_BUILD_EXAMPLES:BOOL=ON
@@ -105,3 +105,4 @@ endif()
 # YET EVERYTHING CRASHES
 # 
 set( GLFW_LIBS ${GLFW_ROOT}/lib/libglfw.so )
+set( GLFW_DEPS ${GLFW_ROOT}/deps/glad.c    )

@@ -55,7 +55,7 @@ public:
 
   virtual ~Parser( );
 
-  ParserElem ParseFile ( std::string path );
+  ParserElem parseFile ( std::string path );
 
 private:
   //
@@ -81,7 +81,7 @@ private:
   //
   // Internal recursive function to scope elements
   //
-  bool ParseLines( std::vector< std::string >::iterator &itStart, 
+  bool parseLines( std::vector< std::string >::iterator &itStart, 
                    std::vector< std::string >::iterator  itEnd,
                    unsigned int                         &lineIdx,
                    ParserElem                           &elem, 

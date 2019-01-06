@@ -110,9 +110,10 @@ target_link_libraries( ${GTEST_ARGS_TARGET} ${GTEST_LIBS} )
 #
 # RPATH
 #
-set_target_properties( ${GTEST_ARGS_TARGET}
-                       PROPERTIES
-                         INSTALL_RPATH ${GTEST_ARGS_INSTALL_RPATH} )
+set_property( TARGET   ${GTEST_ARGS_TARGET}
+              PROPERTY INSTALL_RPATH 
+                ${GTEST_ARGS_INSTALL_RPATH} 
+                )
 
 install( TARGETS ${GTEST_ARGS_TARGET} 
          RUNTIME DESTINATION ${GTEST_ARGS_INSTALL}
